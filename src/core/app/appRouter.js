@@ -1,13 +1,18 @@
 import express from 'express';
 import authRoutes from '../../entities/auth/auth.routes.js';
 import userRoutes from '../../entities/user/user.routes.js';
-
+import contactRoutes from '../../entities/contact/contact.routes.js';
+import caseStudyRoutes from '../../entities/caseStudy/caseStudy.routes.js';
+import blogRoutes from '../../entities/blog/blog.routes.js';
 
 const router = express.Router();
 
 
 router.use('/v1/auth', authRoutes);
+router.use('/v1/contact', contactRoutes);
 router.use('/v1/user', userRoutes);
+router.use('/v1/case-study', caseStudyRoutes);
+router.use('/v1/blog', blogRoutes);
 
 
 export default router;
