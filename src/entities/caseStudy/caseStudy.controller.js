@@ -7,11 +7,30 @@ import {
   deleteCaseStudyService,
 } from './caseStudy.service.js';
 
+const firstAvailableFile = (files) => {
+  if (!files) return undefined;
+  if (Array.isArray(files)) return files[0];
+  for (const key of Object.keys(files)) {
+    if (files[key]?.[0]) return files[key][0];
+  }
+  return undefined;
+};
+
+const pickField = (body, keys) => {
+  for (const key of keys) {
+    if (body?.[key] !== undefined) return body[key];
+  }
+  return undefined;
+};
+
 // Admin: create case study (multipart/form-data)
 export const createCaseStudy = async (req, res) => {
   try {
-    const imageFile = req.files?.image?.[0];
-    const caseStudy = await createCaseStudyService({ ...req.body, image: imageFile });
+    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
+    const title = pickField(req.body, ['title', 'Title', 'title ', 'Title ']);
+    const description = pickField(req.body, ['description', 'Description', 'description ', 'Description ']);
+
+    const caseStudy = await createCaseStudyService({ title, description, image: imageFile });
     return res.status(201).json({
       success: true,
       message: 'Case study created successfully',
@@ -76,8 +95,15 @@ export const updateCaseStudy = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid case study id' });
     }
 
-    const imageFile = req.files?.image?.[0];
-    const result = await updateCaseStudyService(id, { ...req.body, ...(imageFile ? { image: imageFile } : {}) });
+    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
+    const title = pickField(req.body, ['title', 'Title', 'title ', 'Title ']);
+    const description = pickField(req.body, ['description', 'Description', 'description ', 'Description ']);
+
+    const result = await updateCaseStudyService(id, {
+      ...(title !== undefined ? { title } : {}),
+      ...(description !== undefined ? { description } : {}),
+      ...(imageFile ? { image: imageFile } : {}),
+    });
 
     if (result?.notFound) {
       return res.status(404).json({ success: false, message: 'Case study not found' });

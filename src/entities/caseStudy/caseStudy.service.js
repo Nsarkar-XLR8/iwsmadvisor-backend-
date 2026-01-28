@@ -1,6 +1,10 @@
 import CaseStudy from './caseStudy.model.js';
 
-const isNonEmptyString = (val) => typeof val === 'string' && val.trim().length > 0;
+const toTrimmedString = (val) => {
+  if (val === undefined || val === null) return '';
+  return String(val).trim();
+};
+const isNonEmptyString = (val) => toTrimmedString(val).length > 0;
 
 const parsePagination = (page, limit) => {
   const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
@@ -22,7 +26,10 @@ const mapFilePayload = (file) => {
 };
 
 export const createCaseStudyService = async ({ title, description, image }) => {
-  if (!isNonEmptyString(title) || !isNonEmptyString(description)) {
+  const titleStr = toTrimmedString(title);
+  const descriptionStr = toTrimmedString(description);
+
+  if (!isNonEmptyString(titleStr) || !isNonEmptyString(descriptionStr)) {
     const err = new Error('Title and description are required');
     err.code = 'VALIDATION_ERROR';
     throw err;
@@ -31,8 +38,8 @@ export const createCaseStudyService = async ({ title, description, image }) => {
   const imagePayload = mapFilePayload(image);
 
   return CaseStudy.create({
-    title: title.trim(),
-    description: description.trim(),
+    title: titleStr,
+    description: descriptionStr,
     ...(imagePayload ? { image: imagePayload } : {}),
   });
 };
@@ -92,7 +99,7 @@ export const updateCaseStudyService = async (id, data) => {
         continue;
       }
 
-      updates[field] = data[field].trim();
+      updates[field] = toTrimmedString(data[field]);
     }
   }
 
