@@ -1,12 +1,22 @@
 import mongoose from 'mongoose';
 
+export const CONTACT_SERVICE_OPTIONS = ['service 1', 'service 2', 'service 3', 'service 4'];
+
 const ContactSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true, trim: true },
+    firstName: { type: String, required: true, trim: true },
+    lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
     phone: { type: String, default: '', trim: true },
+    service: { type: String, enum: CONTACT_SERVICE_OPTIONS, required: true, trim: true },
     message: { type: String, required: true, trim: true },
-    consent: { type: Boolean, default: false },
+    file: {
+      filename: { type: String },
+      originalName: { type: String },
+      mimeType: { type: String },
+      size: { type: Number },
+      path: { type: String },
+    },
   },
   { timestamps: true }
 );
