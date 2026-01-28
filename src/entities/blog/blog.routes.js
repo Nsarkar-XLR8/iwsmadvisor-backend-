@@ -16,8 +16,8 @@ router.get('/', getBlogs);
 router.get('/:id', getBlogById);
 
 // Admin: manage blogs
-router.post('/', verifyToken, adminMiddleware, multerUpload([{ name: 'image', maxCount: 1 }]), createBlog);
-router.put('/:id', verifyToken, adminMiddleware, multerUpload([{ name: 'image', maxCount: 1 }]), updateBlog);
+router.post('/', verifyToken, adminMiddleware, multerUpload([{ name: 'file', maxCount: 1 }]), createBlog);
+router.put('/:id', verifyToken, adminMiddleware, multerUpload([{ name: 'file', maxCount: 1 }]), updateBlog);
 router.delete('/:id', verifyToken, adminMiddleware, deleteBlog);
 
 export default router;
