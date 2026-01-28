@@ -8,10 +8,11 @@ import {
   deleteContactService,
 } from './contact.service.js';
 
-// Public: create contact message
+// Public: create contact message (multipart/form-data)
 export const createContact = async (req, res) => {
   try {
-    const contact = await createContactService(req.body);
+    const contactFile = req.files?.file?.[0];
+    const contact = await createContactService({ ...req.body, file: contactFile });
     return res.status(201).json({
       success: true,
       message: 'Message sent successfully',
@@ -76,7 +77,11 @@ export const updateContact = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid contact id' });
     }
 
-    const result = await updateContactService(id, req.body);
+    const contactFile = req.files?.file?.[0];
+    const result = await updateContactService(id, {
+      ...req.body,
+      ...(contactFile ? { file: contactFile } : {}),
+    });
 
     if (result?.notFound) {
       return res.status(404).json({ success: false, message: 'Contact not found' });
