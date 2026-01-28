@@ -16,9 +16,12 @@ const AddressSchema = new mongoose.Schema({
 
 const UserSchema = new mongoose.Schema(
   {
-    name: { type: String, required: true },
+    firstName: { type: String, required: true, trim: true },
+    lastName: { type: String, required: true, trim: true },
+    name: { type: String, default: '', trim: true }, // kept for backward compatibility/queries
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    phone: { type: String, default: '', trim: true },
     username: { type: String },
     dob: { type: Date, default: null },
     gender: {
@@ -77,9 +80,23 @@ const UserSchema = new mongoose.Schema(
     blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     language: { type: String, default: 'en' }
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
+UserSchema.virtual('fullName').get(function () {
+  return [this.firstName, this.lastName].filter(Boolean).join(' ').trim();
+});
+
+
+// Sync full name for backward compatibility
+UserSchema.pre('save', function (next) {
+  this.name = [this.firstName, this.lastName].filter(Boolean).join(' ').trim();
+  next();
+});
 
 // Hashing password
 UserSchema.pre("save", async function (next) {
@@ -89,6 +106,27 @@ UserSchema.pre("save", async function (next) {
   const hashedPassword = await bcrypt.hash(this.password, 10);
 
   this.password = hashedPassword;
+  next();
+});
+
+UserSchema.pre('findOneAndUpdate', function (next) {
+  const update = this.getUpdate() || {};
+  const $set = update.$set || update;
+  const hasFirst = $set.firstName !== undefined;
+  const hasLast = $set.lastName !== undefined;
+
+  if (hasFirst || hasLast) {
+    const firstName = hasFirst ? $set.firstName : this._update.firstName;
+    const lastName = hasLast ? $set.lastName : this._update.lastName;
+    const combined = [firstName, lastName].filter(Boolean).join(' ').trim();
+
+    if (update.$set) {
+      this._update.$set.name = combined;
+    } else {
+      this._update.name = combined;
+    }
+  }
+
   next();
 });
 
