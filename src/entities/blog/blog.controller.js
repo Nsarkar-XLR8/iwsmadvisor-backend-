@@ -7,10 +7,19 @@ import {
   deleteBlogService,
 } from './blog.service.js';
 
+const firstAvailableFile = (files) => {
+  if (!files) return undefined;
+  if (Array.isArray(files)) return files[0];
+  for (const key of Object.keys(files)) {
+    if (files[key]?.[0]) return files[key][0];
+  }
+  return undefined;
+};
+
 // Admin: create blog (multipart/form-data)
 export const createBlog = async (req, res) => {
   try {
-    const imageFile = req.files?.image?.[0];
+    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
     const blog = await createBlogService({ ...req.body, image: imageFile });
     return res.status(201).json({
       success: true,
@@ -76,7 +85,7 @@ export const updateBlog = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid blog id' });
     }
 
-    const imageFile = req.files?.image?.[0];
+    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
     const result = await updateBlogService(id, { ...req.body, ...(imageFile ? { image: imageFile } : {}) });
 
     if (result?.notFound) {
