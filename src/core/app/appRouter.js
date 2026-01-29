@@ -4,6 +4,8 @@ import userRoutes from '../../entities/user/user.routes.js';
 import contactRoutes from '../../entities/contact/contact.routes.js';
 import caseStudyRoutes from '../../entities/caseStudy/caseStudy.routes.js';
 import blogRoutes from '../../entities/blog/blog.routes.js';
+import adminDashboardRoutes from '../../entities/adminDashboard/adminDashboard.routes.js';
+import careerRoutes from '../../entities/career/career.routes.js';
 
 const router = express.Router();
 
@@ -13,6 +15,8 @@ router.use('/v1/contact', contactRoutes);
 router.use('/v1/user', userRoutes);
 router.use('/v1/case-study', caseStudyRoutes);
 router.use('/v1/blog', blogRoutes);
+router.use('/v1/admin-dashboard', adminDashboardRoutes);
+router.use('/v1/career', careerRoutes);
 
 
 export default router;
