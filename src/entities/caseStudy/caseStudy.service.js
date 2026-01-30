@@ -5,6 +5,17 @@ const toTrimmedString = (val) => {
   return String(val).trim();
 };
 const isNonEmptyString = (val) => toTrimmedString(val).length > 0;
+const toStringArray = (val) => {
+  if (Array.isArray(val)) {
+    return val.map(toTrimmedString).filter((item) => item.length > 0);
+  }
+  const str = toTrimmedString(val);
+  if (!str) return [];
+  return str
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+};
 
 const parsePagination = (page, limit) => {
   const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
@@ -25,7 +36,22 @@ const mapFilePayload = (file) => {
   };
 };
 
-export const createCaseStudyService = async ({ title, description, image }) => {
+export const createCaseStudyService = async ({
+  title,
+  description,
+  subtitle,
+  client,
+  duration,
+  teamSize,
+  challenge,
+  solution,
+  technologiesUsed,
+  resultImpact,
+  caseExperience,
+  clientName,
+  companyName,
+  image,
+}) => {
   const titleStr = toTrimmedString(title);
   const descriptionStr = toTrimmedString(description);
 
@@ -36,10 +62,22 @@ export const createCaseStudyService = async ({ title, description, image }) => {
   }
 
   const imagePayload = mapFilePayload(image);
+  const technologies = toStringArray(technologiesUsed);
 
   return CaseStudy.create({
     title: titleStr,
     description: descriptionStr,
+    subtitle: toTrimmedString(subtitle),
+    client: toTrimmedString(client),
+    duration: toTrimmedString(duration),
+    teamSize: toTrimmedString(teamSize),
+    challenge: toTrimmedString(challenge),
+    solution: toTrimmedString(solution),
+    technologiesUsed: technologies,
+    resultImpact: toTrimmedString(resultImpact),
+    caseExperience: toTrimmedString(caseExperience),
+    clientName: toTrimmedString(clientName),
+    companyName: toTrimmedString(companyName),
     ...(imagePayload ? { image: imagePayload } : {}),
   });
 };
@@ -80,7 +118,22 @@ export const getCaseStudyByIdService = async (id) => {
 };
 
 export const updateCaseStudyService = async (id, data) => {
-  const allowed = ['title', 'description', 'image'];
+  const allowed = [
+    'title',
+    'description',
+    'subtitle',
+    'client',
+    'duration',
+    'teamSize',
+    'challenge',
+    'solution',
+    'technologiesUsed',
+    'resultImpact',
+    'caseExperience',
+    'clientName',
+    'companyName',
+    'image',
+  ];
   const updates = {};
 
   for (const field of allowed) {
@@ -96,6 +149,11 @@ export const updateCaseStudyService = async (id, data) => {
         if (imagePayload) {
           updates[field] = imagePayload;
         }
+        continue;
+      }
+
+      if (field === 'technologiesUsed') {
+        updates[field] = toStringArray(data[field]);
         continue;
       }
 

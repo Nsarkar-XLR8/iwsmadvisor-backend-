@@ -8,9 +8,18 @@ const parsePagination = (page, limit) => {
   return { page: safePage, limit: safeLimit };
 };
 
-export const createCareerService = async ({ title, department, location, type }) => {
-  if (!isNonEmptyString(title) || !isNonEmptyString(department) || !isNonEmptyString(location)) {
-    const err = new Error('Title, department, and location are required');
+export const createCareerService = async ({
+  title,
+  role,
+  department,
+  location,
+  type,
+  description,
+  requirements,
+  responsibilities,
+}) => {
+  if (!isNonEmptyString(title) || !isNonEmptyString(role) || !isNonEmptyString(department) || !isNonEmptyString(location)) {
+    const err = new Error('Title, role, department, and location are required');
     err.code = 'VALIDATION_ERROR';
     throw err;
   }
@@ -24,9 +33,13 @@ export const createCareerService = async ({ title, department, location, type })
 
   return Career.create({
     title: title.trim(),
+    role: role.trim(),
     department: department.trim(),
     location: location.trim(),
     type: normalizedType,
+    description: isNonEmptyString(description) ? description.trim() : '',
+    requirements: isNonEmptyString(requirements) ? requirements.trim() : '',
+    responsibilities: isNonEmptyString(responsibilities) ? responsibilities.trim() : '',
   });
 };
 
@@ -75,12 +88,12 @@ export const getCareerByIdService = async (id) => {
 };
 
 export const updateCareerService = async (id, data) => {
-  const allowed = ['title', 'department', 'location', 'type'];
+  const allowed = ['title', 'role', 'department', 'location', 'type', 'description', 'requirements', 'responsibilities'];
   const updates = {};
 
   for (const field of allowed) {
     if (data[field] !== undefined) {
-      if (['title', 'department', 'location'].includes(field)) {
+      if (['title', 'role', 'department', 'location'].includes(field)) {
         if (!isNonEmptyString(data[field])) {
           const err = new Error(`${field} cannot be empty`);
           err.code = 'VALIDATION_ERROR';
@@ -98,7 +111,10 @@ export const updateCareerService = async (id, data) => {
           throw err;
         }
         updates.type = normalizedType;
+        continue;
       }
+
+      updates[field] = isNonEmptyString(data[field]) ? data[field].trim() : '';
     }
   }
 
