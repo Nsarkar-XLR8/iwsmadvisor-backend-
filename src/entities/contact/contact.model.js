@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export const CONTACT_SERVICE_OPTIONS = ['service 1', 'service 2', 'service 3', 'service 4'];
+export const CONTACT_SERVICE_OPTIONS = ['IWMS Consulting', 'IWMS Implementation', 'System Integration', 'Managed Support'];
 
 const ContactSchema = new mongoose.Schema(
   {
