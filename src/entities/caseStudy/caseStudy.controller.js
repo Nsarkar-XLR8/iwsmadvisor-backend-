@@ -29,8 +29,34 @@ export const createCaseStudy = async (req, res) => {
     const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
     const title = pickField(req.body, ['title', 'Title', 'title ', 'Title ']);
     const description = pickField(req.body, ['description', 'Description', 'description ', 'Description ']);
+    const subtitle = pickField(req.body, ['subtitle', 'subTitle', 'Subtitle']);
+    const client = pickField(req.body, ['client', 'Client']);
+    const duration = pickField(req.body, ['duration', 'Duration']);
+    const teamSize = pickField(req.body, ['teamSize', 'team_size', 'TeamSize', 'Team Size']);
+    const challenge = pickField(req.body, ['challenge', 'Challenge']);
+    const solution = pickField(req.body, ['solution', 'Solution']);
+    const technologiesUsed = pickField(req.body, ['technologiesUsed', 'technologies', 'TechnologiesUsed', 'Technologies']);
+    const resultImpact = pickField(req.body, ['resultImpact', 'result', 'ResultImpact', 'Result']);
+    const caseExperience = pickField(req.body, ['caseExperience', 'experience', 'CaseExperience', 'Experience']);
+    const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
+    const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
 
-    const caseStudy = await createCaseStudyService({ title, description, image: imageFile });
+    const caseStudy = await createCaseStudyService({
+      title,
+      description,
+      subtitle,
+      client,
+      duration,
+      teamSize,
+      challenge,
+      solution,
+      technologiesUsed,
+      resultImpact,
+      caseExperience,
+      clientName,
+      companyName,
+      image: imageFile,
+    });
     return res.status(201).json({
       success: true,
       message: 'Case study created successfully',
@@ -98,10 +124,32 @@ export const updateCaseStudy = async (req, res) => {
     const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
     const title = pickField(req.body, ['title', 'Title', 'title ', 'Title ']);
     const description = pickField(req.body, ['description', 'Description', 'description ', 'Description ']);
+    const subtitle = pickField(req.body, ['subtitle', 'subTitle', 'Subtitle']);
+    const client = pickField(req.body, ['client', 'Client']);
+    const duration = pickField(req.body, ['duration', 'Duration']);
+    const teamSize = pickField(req.body, ['teamSize', 'team_size', 'TeamSize', 'Team Size']);
+    const challenge = pickField(req.body, ['challenge', 'Challenge']);
+    const solution = pickField(req.body, ['solution', 'Solution']);
+    const technologiesUsed = pickField(req.body, ['technologiesUsed', 'technologies', 'TechnologiesUsed', 'Technologies']);
+    const resultImpact = pickField(req.body, ['resultImpact', 'result', 'ResultImpact', 'Result']);
+    const caseExperience = pickField(req.body, ['caseExperience', 'experience', 'CaseExperience', 'Experience']);
+    const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
+    const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
 
     const result = await updateCaseStudyService(id, {
       ...(title !== undefined ? { title } : {}),
       ...(description !== undefined ? { description } : {}),
+      ...(subtitle !== undefined ? { subtitle } : {}),
+      ...(client !== undefined ? { client } : {}),
+      ...(duration !== undefined ? { duration } : {}),
+      ...(teamSize !== undefined ? { teamSize } : {}),
+      ...(challenge !== undefined ? { challenge } : {}),
+      ...(solution !== undefined ? { solution } : {}),
+      ...(technologiesUsed !== undefined ? { technologiesUsed } : {}),
+      ...(resultImpact !== undefined ? { resultImpact } : {}),
+      ...(caseExperience !== undefined ? { caseExperience } : {}),
+      ...(clientName !== undefined ? { clientName } : {}),
+      ...(companyName !== undefined ? { companyName } : {}),
       ...(imageFile ? { image: imageFile } : {}),
     });
 
