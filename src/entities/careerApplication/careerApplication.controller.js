@@ -4,6 +4,7 @@ import {
   getCareerApplicationsService,
   getCareerApplicationByIdService,
   deleteCareerApplicationService,
+  updateCareerApplicationService,
 } from './careerApplication.service.js';
 
 const firstAvailableFile = (files) => {
@@ -118,6 +119,34 @@ export const deleteCareerApplication = async (req, res) => {
     return res.status(200).json({ success: true, message: 'Application deleted successfully' });
   } catch (error) {
     console.error('Delete career application error:', error);
+    return res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+// Admin: update application (status)
+export const updateCareerApplication = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid application id' });
+    }
+
+    const { status } = req.body;
+    const result = await updateCareerApplicationService(id, { status });
+    if (result?.notFound) {
+      return res.status(404).json({ success: false, message: 'Application not found' });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Application updated successfully',
+      data: result.updated,
+    });
+  } catch (error) {
+    if (error.code === 'VALIDATION_ERROR') {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+    console.error('Update career application error:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 };
