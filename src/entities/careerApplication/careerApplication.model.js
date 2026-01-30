@@ -16,6 +16,13 @@ const CareerApplicationSchema = new mongoose.Schema(
     },
     resumeLink: { type: String, trim: true },
     notes: { type: String, trim: true },
+    status: {
+      type: String,
+      enum: ['pending', 'shortlisted', 'rejected'],
+      default: 'pending',
+      lowercase: true,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
