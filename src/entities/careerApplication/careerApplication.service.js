@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import Career from '../career/career.model.js';
 import CareerApplication from './careerApplication.model.js';
 
+const ALLOWED_STATUSES = ['pending', 'shortlisted', 'rejected'];
+
 const isNonEmptyString = (val) => typeof val === 'string' && val.trim().length > 0;
 const mapFilePayload = (file) => {
   if (!file) return undefined;
@@ -62,6 +64,7 @@ export const createCareerApplicationService = async ({
     resumeFile: filePayload,
     resumeLink: isNonEmptyString(resumeLink) ? resumeLink.trim() : '',
     notes: isNonEmptyString(notes) ? notes.trim() : '',
+    status: 'pending',
   });
 };
 
@@ -123,4 +126,23 @@ export const deleteCareerApplicationService = async (id) => {
   const result = await CareerApplication.findByIdAndDelete(id);
   if (!result) return { notFound: true };
   return { deleted: true };
+};
+
+export const updateCareerApplicationService = async (id, { status }) => {
+  const nextStatus = isNonEmptyString(status) ? status.trim().toLowerCase() : 'pending';
+  if (!ALLOWED_STATUSES.includes(nextStatus)) {
+    const err = new Error('Invalid status value');
+    err.code = 'VALIDATION_ERROR';
+    throw err;
+  }
+
+  const updated = await CareerApplication.findByIdAndUpdate(
+    id,
+    { status: nextStatus },
+    { new: true }
+  );
+  if (!updated) {
+    return { notFound: true };
+  }
+  return { updated };
 };

@@ -6,6 +6,7 @@ import {
   getCareerApplications,
   getCareerApplicationById,
   deleteCareerApplication,
+  updateCareerApplication,
 } from './careerApplication.controller.js';
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.get('/me/:id', verifyToken, getCareerApplicationById);
 router.get('/', verifyToken, adminMiddleware, getCareerApplications);
 router.get('/:id', verifyToken, adminMiddleware, getCareerApplicationById);
 router.delete('/:id', verifyToken, adminMiddleware, deleteCareerApplication);
+router.put('/:id', verifyToken, adminMiddleware, updateCareerApplication);
 
 export default router;
