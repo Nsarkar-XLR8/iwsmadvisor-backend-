@@ -1,4 +1,5 @@
 import CaseStudy from './caseStudy.model.js';
+import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 
 const toTrimmedString = (val) => {
   if (val === undefined || val === null) return '';
@@ -23,16 +24,26 @@ const parsePagination = (page, limit) => {
   return { page: safePage, limit: safeLimit };
 };
 
-const mapFilePayload = (file) => {
+const mapFilePayload = async (file) => {
   if (!file) return undefined;
   const source = Array.isArray(file) ? file[0] : file;
   if (!source) return undefined;
+  const uploaded = await cloudinaryUpload(
+    source.path,
+    `${Date.now()}-${source.filename}`,
+    'case-studies'
+  );
+  if (!uploaded || uploaded === 'file upload failed') {
+    const err = new Error('Image upload failed');
+    err.code = 'UPLOAD_ERROR';
+    throw err;
+  }
   return {
     filename: source.filename,
     originalName: source.originalname || source.originalName,
     mimeType: source.mimetype || source.mimeType,
     size: source.size,
-    path: source.path,
+    url: uploaded.secure_url,
   };
 };
 
@@ -63,7 +74,7 @@ export const createCaseStudyService = async ({
     throw err;
   }
 
-  const imagePayload = mapFilePayload(image);
+  const imagePayload = await mapFilePayload(image);
   const technologies = toStringArray(technologiesUsed);
 
   return CaseStudy.create({
@@ -151,7 +162,7 @@ export const updateCaseStudyService = async (id, data) => {
       }
 
       if (field === 'image') {
-        const imagePayload = mapFilePayload(data[field]);
+        const imagePayload = await mapFilePayload(data[field]);
         if (imagePayload) {
           updates[field] = imagePayload;
         }
