@@ -1,14 +1,12 @@
 import mongoose from 'mongoose';
 
-export const CONTACT_SERVICE_OPTIONS = ['IWMS Consulting', 'IWMS Implementation', 'System Integration', 'Managed Support'];
-
 const ContactSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
     phone: { type: String, default: '', trim: true },
-    service: { type: String, enum: CONTACT_SERVICE_OPTIONS, required: true, trim: true },
+    service: { type: String, required: true, trim: true },
     message: { type: String, required: true, trim: true },
     file: {
       filename: { type: String },

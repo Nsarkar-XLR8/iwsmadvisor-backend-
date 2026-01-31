@@ -1,7 +1,13 @@
 // src/entities/adminDashboard/adminDashboard.service.js
-import Contact, { CONTACT_SERVICE_OPTIONS } from '../contact/contact.model.js';
+import Contact from '../contact/contact.model.js';
+import ServicePage from '../servicePage/servicePage.model.js';
 
 const MONTH_KEYS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+
+const getServiceOptions = async () => {
+  const titles = await ServicePage.distinct('title', { title: { $exists: true, $ne: '' } });
+  return titles.map((t) => String(t).trim()).filter((t) => t.length > 0);
+};
 
 // Returns contact counts per month for the chosen range, grouped by year.
 // Defaults to last 24 months. You can filter by:
@@ -109,13 +115,15 @@ export const getContactServiceStatsService = async ({ year, from, to } = {}) => 
   ]);
 
   const statsByYear = {};
+  const baseServices = await getServiceOptions();
+  const serviceSet = new Set(baseServices);
 
   const monthsToInit = Math.max(
     1,
     (endDate.getFullYear() - startDate.getFullYear()) * 12 + (endDate.getMonth() - startDate.getMonth())
   );
 
-  // Initialize structure with zeros for all services
+  // Initialize structure with zeros for all known services
   for (let i = 0; i < monthsToInit; i += 1) {
     const current = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
     const yearVal = current.getFullYear();
@@ -128,7 +136,7 @@ export const getContactServiceStatsService = async ({ year, from, to } = {}) => 
         total: 0,
       };
     }
-    CONTACT_SERVICE_OPTIONS.forEach((svc) => {
+    baseServices.forEach((svc) => {
       statsByYear[yearVal][monthKey].counts[svc] = 0;
       statsByYear[yearVal][monthKey].percentages[svc] = 0;
     });
@@ -143,6 +151,11 @@ export const getContactServiceStatsService = async ({ year, from, to } = {}) => 
     if (!statsByYear[yearVal][monthKey]) {
       statsByYear[yearVal][monthKey] = { counts: {}, percentages: {}, total: 0 };
     }
+    if (!serviceSet.has(service)) {
+      serviceSet.add(service);
+      statsByYear[yearVal][monthKey].counts[service] = 0;
+      statsByYear[yearVal][monthKey].percentages[service] = 0;
+    }
     statsByYear[yearVal][monthKey].counts[service] = count;
   });
 
@@ -151,9 +164,10 @@ export const getContactServiceStatsService = async ({ year, from, to } = {}) => 
     const months = statsByYear[yearKey];
     Object.keys(months).forEach((monthKey) => {
       const monthEntry = months[monthKey];
-      const total = CONTACT_SERVICE_OPTIONS.reduce((sum, svc) => sum + (monthEntry.counts[svc] || 0), 0);
+      const servicesForMonth = Object.keys(monthEntry.counts);
+      const total = servicesForMonth.reduce((sum, svc) => sum + (monthEntry.counts[svc] || 0), 0);
       monthEntry.total = total;
-      CONTACT_SERVICE_OPTIONS.forEach((svc) => {
+      servicesForMonth.forEach((svc) => {
         const pct = total > 0 ? (monthEntry.counts[svc] / total) * 100 : 0;
         monthEntry.percentages[svc] = Number(pct.toFixed(2));
       });
