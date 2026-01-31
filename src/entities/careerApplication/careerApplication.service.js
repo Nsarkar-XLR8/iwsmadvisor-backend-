@@ -1,20 +1,31 @@
 import mongoose from 'mongoose';
 import Career from '../career/career.model.js';
 import CareerApplication from './careerApplication.model.js';
+import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 
 const ALLOWED_STATUSES = ['pending', 'shortlisted', 'rejected'];
 
 const isNonEmptyString = (val) => typeof val === 'string' && val.trim().length > 0;
-const mapFilePayload = (file) => {
+const mapFilePayload = async (file) => {
   if (!file) return undefined;
   const source = Array.isArray(file) ? file[0] : file;
   if (!source) return undefined;
+  const uploaded = await cloudinaryUpload(
+    source.path,
+    `${Date.now()}-${source.filename}`,
+    'career-applications'
+  );
+  if (!uploaded || uploaded === 'file upload failed') {
+    const err = new Error('Resume upload failed');
+    err.code = 'UPLOAD_ERROR';
+    throw err;
+  }
   return {
     filename: source.filename,
     originalName: source.originalname || source.originalName,
     mimeType: source.mimetype || source.mimeType,
     size: source.size,
-    path: source.path,
+    url: uploaded.secure_url,
   };
 };
 
@@ -55,7 +66,7 @@ export const createCareerApplicationService = async ({
     throw err;
   }
 
-  const filePayload = mapFilePayload(resumeFile);
+  const filePayload = await mapFilePayload(resumeFile);
 
   return CareerApplication.create({
     careerId,
