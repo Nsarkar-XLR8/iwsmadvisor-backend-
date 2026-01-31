@@ -9,6 +9,7 @@ import careerRoutes from '../../entities/career/career.routes.js';
 import careerApplicationRoutes from '../../entities/careerApplication/careerApplication.routes.js';
 import realStateRoutes from '../../entities/realState/realState.routes.js';
 import servicePageRoutes from '../../entities/servicePage/servicePage.routes.js';
+import faqRoutes from '../../entities/faq/faq.routes.js';
 
 const router = express.Router();
 
@@ -23,6 +24,7 @@ router.use('/v1/career', careerRoutes);
 router.use('/v1/career-application', careerApplicationRoutes);
 router.use('/v1/real-state', realStateRoutes);
 router.use('/v1/service-page', servicePageRoutes);
+router.use('/v1/faq', faqRoutes);
 
 
 export default router;
