@@ -40,6 +40,8 @@ export const createCaseStudy = async (req, res) => {
     const caseExperience = pickField(req.body, ['caseExperience', 'experience', 'CaseExperience', 'Experience']);
     const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
     const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
+    const benefit = pickField(req.body, ['benefit', 'Benefit']);
+    const customer = pickField(req.body, ['customer', 'Customer']);
 
     const caseStudy = await createCaseStudyService({
       title,
@@ -55,6 +57,8 @@ export const createCaseStudy = async (req, res) => {
       caseExperience,
       clientName,
       companyName,
+      benefit,
+      customer,
       image: imageFile,
     });
     return res.status(201).json({
@@ -135,6 +139,8 @@ export const updateCaseStudy = async (req, res) => {
     const caseExperience = pickField(req.body, ['caseExperience', 'experience', 'CaseExperience', 'Experience']);
     const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
     const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
+    const benefit = pickField(req.body, ['benefit', 'Benefit']);
+    const customer = pickField(req.body, ['customer', 'Customer']);
 
     const result = await updateCaseStudyService(id, {
       ...(title !== undefined ? { title } : {}),
@@ -150,6 +156,8 @@ export const updateCaseStudy = async (req, res) => {
       ...(caseExperience !== undefined ? { caseExperience } : {}),
       ...(clientName !== undefined ? { clientName } : {}),
       ...(companyName !== undefined ? { companyName } : {}),
+      ...(benefit !== undefined ? { benefit } : {}),
+      ...(customer !== undefined ? { customer } : {}),
       ...(imageFile ? { image: imageFile } : {}),
     });
 
