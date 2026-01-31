@@ -7,7 +7,7 @@ import {
   emailFrom,
 } from "../core/config/config.js"; 
 
-const sendEmail = async ({ to, subject, html }) => {
+const sendEmail = async ({ to, subject, html, attachments = [] }) => {
   try {
     const transporter = nodemailer.createTransport({
       host: emailHost,
@@ -24,6 +24,7 @@ const sendEmail = async ({ to, subject, html }) => {
       to,
       subject,
       html,
+      attachments: Array.isArray(attachments) ? attachments : [],
     };
 
     await transporter.sendMail(mailOptions);
