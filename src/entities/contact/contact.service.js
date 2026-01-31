@@ -1,5 +1,6 @@
 // src/modules/contact/contact.service.js
-import Contact, { CONTACT_SERVICE_OPTIONS } from './contact.model.js';
+import Contact from './contact.model.js';
+import ServicePage from '../servicePage/servicePage.model.js';
 
 const isNonEmptyString = (val) => typeof val === 'string' && val.trim().length > 0;
 const trimIfString = (val) => (typeof val === 'string' ? val.trim() : val);
@@ -21,6 +22,11 @@ const mapFilePayload = (file) => {
     size: source.size,
     path: source.path,
   };
+};
+
+const getServiceOptions = async () => {
+  const titles = await ServicePage.distinct('title', { title: { $exists: true, $ne: '' } });
+  return titles.map((t) => String(t).trim()).filter((t) => t.length > 0);
 };
 
 export const createContactService = async ({
@@ -45,7 +51,8 @@ export const createContactService = async ({
   }
 
   const normalizedService = service.trim();
-  if (!CONTACT_SERVICE_OPTIONS.includes(normalizedService)) {
+  const validServices = await getServiceOptions();
+  if (validServices.length > 0 && !validServices.includes(normalizedService)) {
     const err = new Error('Service selection is invalid');
     err.code = 'VALIDATION_ERROR';
     throw err;
@@ -117,7 +124,8 @@ export const updateContactService = async (id, data) => {
 
       if (field === 'service') {
         const normalizedService = String(data[field]).trim();
-        if (!CONTACT_SERVICE_OPTIONS.includes(normalizedService)) {
+        const validServices = await getServiceOptions();
+        if (validServices.length > 0 && !validServices.includes(normalizedService)) {
           const err = new Error('Service selection is invalid');
           err.code = 'VALIDATION_ERROR';
           throw err;

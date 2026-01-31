@@ -15,6 +15,8 @@ const CareerApplicationSchema = new mongoose.Schema(
       path: { type: String },
     },
     resumeLink: { type: String, trim: true },
+    portfolioLink: { type: String, trim: true },
+    coverLetter: { type: String, trim: true },
     notes: { type: String, trim: true },
     status: {
       type: String,

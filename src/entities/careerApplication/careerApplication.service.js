@@ -32,6 +32,8 @@ export const createCareerApplicationService = async ({
   phone,
   resumeFile,
   resumeLink,
+  portfolioLink,
+  coverLetter,
   notes,
 }) => {
   if (!mongoose.Types.ObjectId.isValid(careerId)) {
@@ -63,6 +65,8 @@ export const createCareerApplicationService = async ({
     phone: isNonEmptyString(phone) ? phone.trim() : '',
     resumeFile: filePayload,
     resumeLink: isNonEmptyString(resumeLink) ? resumeLink.trim() : '',
+    portfolioLink: isNonEmptyString(portfolioLink) ? portfolioLink.trim() : '',
+    coverLetter: isNonEmptyString(coverLetter) ? coverLetter.trim() : '',
     notes: isNonEmptyString(notes) ? notes.trim() : '',
     status: 'pending',
   });
@@ -128,17 +132,38 @@ export const deleteCareerApplicationService = async (id) => {
   return { deleted: true };
 };
 
-export const updateCareerApplicationService = async (id, { status }) => {
-  const nextStatus = isNonEmptyString(status) ? status.trim().toLowerCase() : 'pending';
-  if (!ALLOWED_STATUSES.includes(nextStatus)) {
-    const err = new Error('Invalid status value');
-    err.code = 'VALIDATION_ERROR';
-    throw err;
+export const updateCareerApplicationService = async (id, { status, notes, resumeLink, portfolioLink, coverLetter }) => {
+  const updates = {};
+
+  if (status !== undefined) {
+    const nextStatus = isNonEmptyString(status) ? status.trim().toLowerCase() : 'pending';
+    if (!ALLOWED_STATUSES.includes(nextStatus)) {
+      const err = new Error('Invalid status value');
+      err.code = 'VALIDATION_ERROR';
+      throw err;
+    }
+    updates.status = nextStatus;
+  }
+
+  if (notes !== undefined) {
+    updates.notes = isNonEmptyString(notes) ? notes.trim() : '';
+  }
+
+  if (resumeLink !== undefined) {
+    updates.resumeLink = isNonEmptyString(resumeLink) ? resumeLink.trim() : '';
+  }
+
+  if (portfolioLink !== undefined) {
+    updates.portfolioLink = isNonEmptyString(portfolioLink) ? portfolioLink.trim() : '';
+  }
+
+  if (coverLetter !== undefined) {
+    updates.coverLetter = isNonEmptyString(coverLetter) ? coverLetter.trim() : '';
   }
 
   const updated = await CareerApplication.findByIdAndUpdate(
     id,
-    { status: nextStatus },
+    updates,
     { new: true }
   );
   if (!updated) {
