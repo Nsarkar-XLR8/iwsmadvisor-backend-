@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const CaseStudySchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
-    description: { type: String,  trim: true },
+    description: { type: String, trim: true },
     subtitle: { type: String, trim: true },
     client: { type: String, trim: true },
     duration: { type: String, trim: true },
@@ -15,6 +15,8 @@ const CaseStudySchema = new mongoose.Schema(
     caseExperience: { type: String, trim: true },
     clientName: { type: String, trim: true },
     companyName: { type: String, trim: true },
+    benefit: { type: String, trim: true },
+    customer: { type: String, trim: true },
     image: {
       filename: { type: String },
       originalName: { type: String },
@@ -26,5 +28,8 @@ const CaseStudySchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
 const CaseStudy = mongoose.models.CaseStudy || mongoose.model('CaseStudy', CaseStudySchema);
 export default CaseStudy;
+
+
