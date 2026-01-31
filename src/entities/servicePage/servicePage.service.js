@@ -1,4 +1,5 @@
 import ServicePage from './servicePage.model.js';
+import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 
 const toTrimmedString = (val) => {
   if (val === undefined || val === null) return '';
@@ -26,16 +27,26 @@ const parseSubtitles = (val) => {
   return fallback ? [fallback] : [];
 };
 
-const mapFilePayload = (file) => {
+const mapFilePayload = async (file) => {
   if (!file) return undefined;
   const source = Array.isArray(file) ? file[0] : file;
   if (!source) return undefined;
+  const uploaded = await cloudinaryUpload(
+    source.path,
+    `${Date.now()}-${source.filename}`,
+    'service-pages'
+  );
+  if (!uploaded || uploaded === 'file upload failed') {
+    const err = new Error('Image upload failed');
+    err.code = 'UPLOAD_ERROR';
+    throw err;
+  }
   return {
     filename: source.filename,
     originalName: source.originalname || source.originalName,
     mimeType: source.mimetype || source.mimeType,
     size: source.size,
-    path: source.path,
+    url: uploaded.secure_url,
   };
 };
 
@@ -94,7 +105,7 @@ export const createServicePageService = async ({
   }
 
   const subtitlesArr = parseSubtitles(subtitles);
-  const imagePayload = mapFilePayload(image);
+  const imagePayload = await mapFilePayload(image);
   const faqArr = normalizeFaq(faq);
 
   return ServicePage.create({
@@ -165,7 +176,7 @@ export const updateServicePageService = async (id, data) => {
       }
 
       if (field === 'image') {
-        const imagePayload = mapFilePayload(data[field]);
+        const imagePayload = await mapFilePayload(data[field]);
         if (imagePayload) updates.image = imagePayload;
         continue;
       }

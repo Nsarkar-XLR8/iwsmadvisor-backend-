@@ -12,7 +12,7 @@ const CareerApplicationSchema = new mongoose.Schema(
       originalName: { type: String },
       mimeType: { type: String },
       size: { type: Number },
-      path: { type: String },
+      url: { type: String },
     },
     resumeLink: { type: String, trim: true },
     portfolioLink: { type: String, trim: true },

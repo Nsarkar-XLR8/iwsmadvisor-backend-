@@ -22,7 +22,7 @@ const CaseStudySchema = new mongoose.Schema(
       originalName: { type: String },
       mimeType: { type: String },
       size: { type: Number },
-      path: { type: String },
+      url: { type: String },
     },
   },
   { timestamps: true }
@@ -31,5 +31,4 @@ const CaseStudySchema = new mongoose.Schema(
 
 const CaseStudy = mongoose.models.CaseStudy || mongoose.model('CaseStudy', CaseStudySchema);
 export default CaseStudy;
-
 
