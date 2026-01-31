@@ -50,6 +50,8 @@ export const createCaseStudyService = async ({
   caseExperience,
   clientName,
   companyName,
+  benefit,
+  customer,
   image,
 }) => {
   const titleStr = toTrimmedString(title);
@@ -78,6 +80,8 @@ export const createCaseStudyService = async ({
     caseExperience: toTrimmedString(caseExperience),
     clientName: toTrimmedString(clientName),
     companyName: toTrimmedString(companyName),
+    benefit: toTrimmedString(benefit),
+    customer: toTrimmedString(customer),
     ...(imagePayload ? { image: imagePayload } : {}),
   });
 };
@@ -132,6 +136,8 @@ export const updateCaseStudyService = async (id, data) => {
     'caseExperience',
     'clientName',
     'companyName',
+    'benefit',
+    'customer',
     'image',
   ];
   const updates = {};
