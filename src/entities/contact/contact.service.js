@@ -53,10 +53,6 @@ const notifyAdmin = async (contact) => {
   if (!to) return;
 
   const subject = `New Contact Message from ${contact.firstName} ${contact.lastName}`;
-  const fileInfo = contact.file
-    ? `<p><strong>File:</strong> ${contact.file.originalName || contact.file.filename}</p>
-       <p><strong>File URL:</strong> ${contact.file.url || 'N/A'}</p>`
-    : '';
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.5;">
       <h2>New Contact Submission</h2>
@@ -65,12 +61,18 @@ const notifyAdmin = async (contact) => {
       <p><strong>Phone:</strong> ${contact.phone || 'N/A'}</p>
       <p><strong>Service:</strong> ${contact.service}</p>
       <p><strong>Message:</strong><br/>${contact.message}</p>
-      ${fileInfo}
     </div>
   `;
 
   try {
-    await sendEmail({ to, subject, html });
+    const attachments = [];
+    if (contact.file?.url) {
+      attachments.push({
+        filename: contact.file.originalName || contact.file.filename || 'file',
+        path: contact.file.url,
+      });
+    }
+    await sendEmail({ to, subject, html, attachments });
   } catch (err) {
     console.error('Admin notification email failed:', err);
   }
