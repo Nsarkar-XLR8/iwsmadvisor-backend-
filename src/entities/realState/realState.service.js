@@ -1,4 +1,5 @@
 import RealState from './realState.model.js';
+import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 
 const toTrimmedString = (val) => {
   if (val === undefined || val === null) return '';
@@ -70,16 +71,26 @@ const parsePagination = (page, limit) => {
   return { page: safePage, limit: safeLimit };
 };
 
-const mapFilePayload = (file) => {
+const mapFilePayload = async (file) => {
   if (!file) return undefined;
   const source = Array.isArray(file) ? file[0] : file;
   if (!source) return undefined;
+  const uploaded = await cloudinaryUpload(
+    source.path,
+    `${Date.now()}-${source.filename}`,
+    'real-state'
+  );
+  if (!uploaded || uploaded === 'file upload failed') {
+    const err = new Error('Image upload failed');
+    err.code = 'UPLOAD_ERROR';
+    throw err;
+  }
   return {
     filename: source.filename,
     originalName: source.originalname || source.originalName,
     mimeType: source.mimetype || source.mimeType,
     size: source.size,
-    path: source.path,
+    url: uploaded.secure_url,
   };
 };
 
@@ -93,7 +104,7 @@ export const createRealStateService = async ({ title, subtitles, overview, keyCa
 
   const subtitlesArr = parseSubtitles(subtitles);
   const keyCapabilitiesArr = normalizeKeyCapabilities(keyCapabilities);
-  const imagePayload = mapFilePayload(image);
+  const imagePayload = await mapFilePayload(image);
 
   return RealState.create({
     title: titleStr,
@@ -163,7 +174,7 @@ export const updateRealStateService = async (id, data) => {
       }
 
       if (field === 'image') {
-        const imagePayload = mapFilePayload(data[field]);
+        const imagePayload = await mapFilePayload(data[field]);
         if (imagePayload) {
           updates.image = imagePayload;
         }

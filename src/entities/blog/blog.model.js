@@ -9,7 +9,7 @@ const BlogSchema = new mongoose.Schema(
       originalName: { type: String },
       mimeType: { type: String },
       size: { type: Number },
-      path: { type: String },
+      url: { type: String },
     },
   },
   { timestamps: true }

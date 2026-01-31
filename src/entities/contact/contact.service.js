@@ -1,6 +1,9 @@
 // src/modules/contact/contact.service.js
 import Contact from './contact.model.js';
 import ServicePage from '../servicePage/servicePage.model.js';
+import sendEmail from '../../lib/sendEmail.js';
+import { adminMail, emailTo } from '../../core/config/config.js';
+import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 
 const isNonEmptyString = (val) => typeof val === 'string' && val.trim().length > 0;
 const trimIfString = (val) => (typeof val === 'string' ? val.trim() : val);
@@ -11,22 +14,66 @@ const parsePagination = (page, limit) => {
   return { page: safePage, limit: safeLimit };
 };
 
-const mapFilePayload = (file) => {
+const mapFilePayload = async (file) => {
   if (!file) return undefined;
   const source = Array.isArray(file) ? file[0] : file;
   if (!source) return undefined;
-  return {
-    filename: source.filename,
-    originalName: source.originalname || source.originalName,
-    mimeType: source.mimetype || source.mimeType,
-    size: source.size,
-    path: source.path,
-  };
+
+  try {
+    const uploaded = await cloudinaryUpload(
+      source.path,
+      `${Date.now()}-${source.filename}`,
+      'contacts'
+    );
+    if (!uploaded || uploaded === 'file upload failed') {
+      const err = new Error('File upload failed');
+      err.code = 'UPLOAD_ERROR';
+      throw err;
+    }
+    return {
+      filename: source.filename,
+      originalName: source.originalname || source.originalName,
+      mimeType: source.mimetype || source.mimeType,
+      size: source.size,
+      url: uploaded.secure_url,
+    };
+  } catch (err) {
+    console.error('Contact file upload failed:', err);
+    throw err;
+  }
 };
 
 const getServiceOptions = async () => {
   const titles = await ServicePage.distinct('title', { title: { $exists: true, $ne: '' } });
   return titles.map((t) => String(t).trim()).filter((t) => t.length > 0);
+};
+
+const notifyAdmin = async (contact) => {
+  const to = adminMail || emailTo;
+  if (!to) return;
+
+  const subject = `New Contact Message from ${contact.firstName} ${contact.lastName}`;
+  const fileInfo = contact.file
+    ? `<p><strong>File:</strong> ${contact.file.originalName || contact.file.filename}</p>
+       <p><strong>File URL:</strong> ${contact.file.url || 'N/A'}</p>`
+    : '';
+  const html = `
+    <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+      <h2>New Contact Submission</h2>
+      <p><strong>Name:</strong> ${contact.firstName} ${contact.lastName}</p>
+      <p><strong>Email:</strong> ${contact.email}</p>
+      <p><strong>Phone:</strong> ${contact.phone || 'N/A'}</p>
+      <p><strong>Service:</strong> ${contact.service}</p>
+      <p><strong>Message:</strong><br/>${contact.message}</p>
+      ${fileInfo}
+    </div>
+  `;
+
+  try {
+    await sendEmail({ to, subject, html });
+  } catch (err) {
+    console.error('Admin notification email failed:', err);
+  }
 };
 
 export const createContactService = async ({
@@ -58,9 +105,9 @@ export const createContactService = async ({
     throw err;
   }
 
-  const filePayload = mapFilePayload(file);
+  const filePayload = await mapFilePayload(file);
 
-  return Contact.create({
+  const created = await Contact.create({
     firstName: firstName.trim(),
     lastName: lastName.trim(),
     email: email.trim(),
@@ -69,6 +116,10 @@ export const createContactService = async ({
     message: message.trim(),
     ...(filePayload ? { file: filePayload } : {}),
   });
+
+  notifyAdmin(created).catch((err) => console.error('Async admin notify error:', err));
+
+  return created;
 };
 
 export const getContactsService = async ({ page = 1, limit = 10, search }) => {
@@ -135,7 +186,7 @@ export const updateContactService = async (id, data) => {
       }
 
       if (field === 'file') {
-        const filePayload = mapFilePayload(data[field]);
+        const filePayload = await mapFilePayload(data[field]);
         if (filePayload) {
           updates[field] = filePayload;
         }
