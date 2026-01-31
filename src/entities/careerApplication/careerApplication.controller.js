@@ -131,8 +131,8 @@ export const updateCareerApplication = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid application id' });
     }
 
-    const { status } = req.body;
-    const result = await updateCareerApplicationService(id, { status });
+    const { status, notes, resumeLink, portfolioLink, coverLetter } = req.body;
+    const result = await updateCareerApplicationService(id, { status, notes, resumeLink, portfolioLink, coverLetter });
     if (result?.notFound) {
       return res.status(404).json({ success: false, message: 'Application not found' });
     }
