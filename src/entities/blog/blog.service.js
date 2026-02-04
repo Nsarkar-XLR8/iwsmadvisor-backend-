@@ -34,7 +34,7 @@ const mapFilePayload = async (file) => {
   };
 };
 
-export const createBlogService = async ({ title, description, image }) => {
+export const createBlogService = async ({ title, subtitle, description, image }) => {
   if (!isNonEmptyString(title) || !isNonEmptyString(description)) {
     const err = new Error('Title and description are required');
     err.code = 'VALIDATION_ERROR';
@@ -45,6 +45,7 @@ export const createBlogService = async ({ title, description, image }) => {
 
   return Blog.create({
     title: title.trim(),
+    subtitle: isNonEmptyString(subtitle) ? subtitle.trim() : '',
     description: description.trim(),
     ...(imagePayload ? { image: imagePayload } : {}),
   });
@@ -58,6 +59,7 @@ export const getBlogsService = async ({ page = 1, limit = 10, search }) => {
     const safeSearch = search.trim().replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
     filter.$or = [
       { title: { $regex: safeSearch, $options: 'i' } },
+      { subtitle: { $regex: safeSearch, $options: 'i' } },
       { description: { $regex: safeSearch, $options: 'i' } },
     ];
   }
@@ -86,7 +88,7 @@ export const getBlogByIdService = async (id) => {
 };
 
 export const updateBlogService = async (id, data) => {
-  const allowed = ['title', 'description', 'image'];
+  const allowed = ['title', 'subtitle', 'description', 'image'];
   const updates = {};
 
   for (const field of allowed) {
@@ -102,6 +104,11 @@ export const updateBlogService = async (id, data) => {
         if (imagePayload) {
           updates[field] = imagePayload;
         }
+        continue;
+      }
+
+      if (field === 'subtitle') {
+        updates[field] = isNonEmptyString(data[field]) ? data[field].trim() : '';
         continue;
       }
 
