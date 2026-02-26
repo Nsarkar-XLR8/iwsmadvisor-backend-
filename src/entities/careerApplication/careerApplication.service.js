@@ -37,7 +37,6 @@ const parsePagination = (page, limit) => {
 
 export const createCareerApplicationService = async ({
   careerId,
-  userId,
   name,
   email,
   phone,
@@ -70,7 +69,6 @@ export const createCareerApplicationService = async ({
 
   return CareerApplication.create({
     careerId,
-    ...(userId ? { userId } : {}),
     name: name.trim(),
     email: email.trim(),
     phone: isNonEmptyString(phone) ? phone.trim() : '',
