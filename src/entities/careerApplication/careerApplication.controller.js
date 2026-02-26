@@ -27,7 +27,7 @@ export const applyToCareer = async (req, res) => {
     const application = await createCareerApplicationService({
       ...req.body,
       careerId,
-      userId: req.user?._id,
+      // userId: req.user?._id,
       resumeFile,
     });
 
