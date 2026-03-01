@@ -11,6 +11,8 @@ import realStateRoutes from '../../entities/realState/realState.routes.js';
 import servicePageRoutes from '../../entities/servicePage/servicePage.routes.js';
 import faqRoutes from '../../entities/faq/faq.routes.js';
 import broadcastRoutes from '../../entities/broadcast/broadcast.routes.js';
+import { bannerRoutes } from '../../entities/CMS/banner/banner.routes.js';
+import { aboutRoutes } from '../../entities/CMS/aboutus/about.routes.js';
 
 const router = express.Router();
 
@@ -27,6 +29,8 @@ router.use('/v1/real-state', realStateRoutes);
 router.use('/v1/service-page', servicePageRoutes);
 router.use('/v1/faq', faqRoutes);
 router.use('/v1/broadcast', broadcastRoutes);
+router.use('/v1/banner', bannerRoutes);
+router.use('/v1/about', aboutRoutes);
 
 
 export default router;
