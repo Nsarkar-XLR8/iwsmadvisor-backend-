@@ -16,6 +16,7 @@ import { aboutRoutes } from '../../entities/CMS/aboutus/about.routes.js';
 import { footerRoutes } from '../../entities/CMS/footer/footer.routes.js';
 import { featuresRoutes } from '../../entities/CMS/features/feature.routes.js';
 import { statsRoutes } from '../../entities/CMS/stats/stats.routes.js';
+import { heroRoutes } from '../../entities/CMS/hero/hero.routes.js';
 
 const router = express.Router();
 
@@ -37,6 +38,7 @@ router.use('/v1/about', aboutRoutes);
 router.use('/v1/footer', footerRoutes);
 router.use("/v1/features", featuresRoutes);
 router.use("/v1/stats", statsRoutes);
+router.use("/v1/hero", heroRoutes);
 
 
 export default router;
