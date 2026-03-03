@@ -1,6 +1,6 @@
 import express from "express";
-import { visionController } from "./vision.controller.js";
-import { visionValidation } from "./vision.validation.js";
+import { missionController } from "./mission.controller.js";
+import { missionValidation } from "./mission.validation.js";
 import { multerUpload } from "../../../core/middlewares/multer.js";
 import { verifyToken, adminMiddleware } from "../../../core/middlewares/authMiddleware.js";
 import validateRequest from "../../../core/middlewares/validateRequest.js";
@@ -8,8 +8,8 @@ import validateRequest from "../../../core/middlewares/validateRequest.js";
 const router = express.Router();
 
 // ✅ Public
-router.get("/all",       visionController.getAllVisions);
-router.get("/:visionId", visionController.getVisionById);
+router.get("/all",        missionController.getAllMissions);
+router.get("/:missionId", missionController.getMissionById);
 
 // ✅ Admin only
 router.post(
@@ -17,24 +17,24 @@ router.post(
     verifyToken,
     adminMiddleware,
     multerUpload([{ name: "image", maxCount: 1 }]),
-    validateRequest(visionValidation.createVisionSchema),
-    visionController.createVision,
+    validateRequest(missionValidation.createMissionSchema),
+    missionController.createMission,
 );
 
 router.patch(
-    "/:visionId",
+    "/:missionId",
     verifyToken,
     adminMiddleware,
     multerUpload([{ name: "image", maxCount: 1 }]),
-    validateRequest(visionValidation.updateVisionSchema),
-    visionController.updateVision,
+    validateRequest(missionValidation.updateMissionSchema),
+    missionController.updateMission,
 );
 
 router.delete(
-    "/:visionId",
+    "/:missionId",
     verifyToken,
     adminMiddleware,
-    visionController.deleteVision,
+    missionController.deleteMission,
 );
 
-export const visionRoutes = router;
+export const missionRoutes = router;

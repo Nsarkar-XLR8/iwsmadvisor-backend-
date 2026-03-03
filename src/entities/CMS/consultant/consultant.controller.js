@@ -2,7 +2,6 @@ import { consultantService } from "./consultant.service.js";
 import { validationResult } from "express-validator";
 import catchAsync from "../../../lib/catchAsync.js";
 import { generateResponse } from "../../../lib/responseFormate.js";
-import { cloudinaryUpload } from "../../../lib/cloudinaryUpload.js";
 
 /**
  * Handle express-validator errors
