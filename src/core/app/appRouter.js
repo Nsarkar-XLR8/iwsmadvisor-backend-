@@ -18,6 +18,7 @@ import { featuresRoutes } from '../../entities/CMS/features/feature.routes.js';
 import { statsRoutes } from '../../entities/CMS/stats/stats.routes.js';
 import { heroRoutes } from '../../entities/CMS/hero/hero.routes.js';
 import { visionRoutes } from '../../entities/CMS/vision/vision.routes.js';
+import { informationRoutes } from '../../entities/CMS/information/information.routes.js';
 
 const router = express.Router();
 
@@ -40,7 +41,8 @@ router.use('/v1/footer', footerRoutes);
 router.use("/v1/features", featuresRoutes);
 router.use("/v1/stats", statsRoutes);
 router.use("/v1/hero", heroRoutes);
-router.use('/v1/vision', visionRoutes)
+router.use('/v1/vision', visionRoutes);
+router.use('/v1/information', informationRoutes);
 
 
 export default router;
