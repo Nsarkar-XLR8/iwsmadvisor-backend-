@@ -1,47 +1,40 @@
 import express from "express";
 import { visionController } from "./vision.controller.js";
 import { visionValidation } from "./vision.validation.js";
+import { multerUpload } from "../../../core/middlewares/multer.js";
 import { verifyToken, adminMiddleware } from "../../../core/middlewares/authMiddleware.js";
 import validateRequest from "../../../core/middlewares/validateRequest.js";
-import { multerUpload } from "../../../core/middlewares/multer.js";
-import { parseFormData } from "../../../core/middlewares/parseFormData.js";
 
 const router = express.Router();
 
+// ✅ Public
+router.get("/all",       visionController.getAllVisions);
+router.get("/:visionId", visionController.getVisionById);
 
-// ✅ Public — fetch Vision section
-router.get("/get", visionController.getVision);
-
-// ✅ Create Vision (Singleton)
+// ✅ Admin only
 router.post(
     "/create",
     verifyToken,
     adminMiddleware,
-    multerUpload([
-        { name: "missionImage", maxCount: 1 },
-        { name: "visionImage", maxCount: 1 },
-        { name: "coreImages", maxCount: 10 }
-    ]),
-    parseFormData,
+    multerUpload([{ name: "image", maxCount: 1 }]),
     validateRequest(visionValidation.createVisionSchema),
-    visionController.createVision
+    visionController.createVision,
 );
 
-// ✅ Update Vision (Singleton — no ID)
 router.patch(
-    "/update",
+    "/:visionId",
     verifyToken,
     adminMiddleware,
+    multerUpload([{ name: "image", maxCount: 1 }]),
     validateRequest(visionValidation.updateVisionSchema),
-    visionController.updateVision
+    visionController.updateVision,
 );
 
-// ✅ Delete Vision
 router.delete(
-    "/delete",
+    "/:visionId",
     verifyToken,
     adminMiddleware,
-    visionController.deleteVision
+    visionController.deleteVision,
 );
 
 export const visionRoutes = router;

@@ -1,5 +1,5 @@
 import express from "express";
-import { multerUpload, multerUploadAny } from "../../../core/middlewares/multer.js";
+import { multerUploadAny } from "../../../core/middlewares/multer.js";
 import { verifyToken, adminMiddleware } from "../../../core/middlewares/authMiddleware.js";
 import validateRequest from "../../../core/middlewares/validateRequest.js";
 import { featuresController } from "./feature.controller.js";
