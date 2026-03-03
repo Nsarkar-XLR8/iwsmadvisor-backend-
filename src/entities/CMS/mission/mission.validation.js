@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const createVisionSchema = Joi.object({
+const createMissionSchema = Joi.object({
     title:       Joi.string().trim().required().messages({
         "any.required": "Title is required",
         "string.empty": "Title cannot be empty",
@@ -11,12 +11,12 @@ const createVisionSchema = Joi.object({
     }),
 });
 
-const updateVisionSchema = Joi.object({
+const updateMissionSchema = Joi.object({
     title:       Joi.string().trim().optional().messages({ "string.empty": "Title cannot be empty" }),
     description: Joi.string().trim().optional().messages({ "string.empty": "Description cannot be empty" }),
 });
 
-export const visionValidation = {
-    createVisionSchema,
-    updateVisionSchema,
+export const missionValidation = {
+    createMissionSchema,
+    updateMissionSchema,
 };
