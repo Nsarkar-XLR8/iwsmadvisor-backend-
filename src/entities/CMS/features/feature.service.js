@@ -1,11 +1,21 @@
+import { Features } from "./feature.model.js";
 import { AppError } from "../../../errors/AppError.js";
 import { HttpStatusCode } from "../../../lib/httpStatus.js";
-import { Features } from "./feature.model.js";
 
 const createFeaturesIntoDb = async (payload) => {
     // ✅ Prevent duplicate title
     const existing = await Features.findOne({ title: payload.title?.trim() });
     if (existing) throw new AppError("Features section with this title already exists", HttpStatusCode.Conflict);
+
+    // ✅ Check duplicate order values
+    const orders = payload.items.map((item) => item.order);
+    const uniqueOrders = new Set(orders);
+    if (uniqueOrders.size !== orders.length) {
+        throw new AppError("Duplicate order values found. Each item must have a unique order", HttpStatusCode.BadRequest);
+    }
+
+    // ✅ Sort items by order before saving
+    payload.items.sort((a, b) => a.order - b.order);
 
     const features = await Features.create(payload);
     return features;
@@ -30,11 +40,7 @@ const getAllFeaturesFromDb = async (query) => {
 
     const [totalDocs, features] = await Promise.all([
         Features.countDocuments(),
-        Features.find()
-            .sort(sort)
-            .skip(skip)
-            .limit(safeLimit)
-            .lean(),
+        Features.find().sort(sort).skip(skip).limit(safeLimit).lean(),
     ]);
 
     const totalPages = Math.ceil(totalDocs / safeLimit);
@@ -55,6 +61,8 @@ const getAllFeaturesFromDb = async (query) => {
 const getFeaturesByIdFromDb = async (id) => {
     const features = await Features.findById(id).lean();
     if (!features) throw new AppError("Features section not found", HttpStatusCode.NotFound);
+    // ✅ Always return items sorted by order
+    features.items.sort((a, b) => a.order - b.order);
     return features;
 };
 
@@ -62,7 +70,7 @@ const updateFeaturesIntoDb = async (id, payload) => {
     const existingFeatures = await Features.findById(id);
     if (!existingFeatures) throw new AppError("Features section not found", HttpStatusCode.NotFound);
 
-    // ✅ Check if title is being updated to an already existing title
+    // ✅ Check duplicate title on update
     if (payload.title) {
         const duplicate = await Features.findOne({
             title: payload.title.trim(),
@@ -78,20 +86,15 @@ const updateFeaturesIntoDb = async (id, payload) => {
         return payload[field]?.trim?.() === existingFeatures[field]?.trim?.();
     });
 
-    // ✅ Check items array for changes
+    // ✅ Check items for changes
     const isItemsSame = (() => {
         if (payload.items === undefined) return true;
-
-        // ✅ Different length means something changed
         if (payload.items.length !== existingFeatures.items.length) return false;
-
-        const incoming = JSON.stringify(payload.items);
+        const incoming = JSON.stringify([...payload.items].sort((a, b) => a.order - b.order));
         const existing = JSON.stringify(
-            existingFeatures.items.map((item) => ({
-                icon: item.icon,
-                title: item.title,
-                description: item.description,
-            }))
+            existingFeatures.items
+                .map(({ order, icon, title, description }) => ({ order, icon, title, description }))
+                .sort((a, b) => a.order - b.order)
         );
         return incoming === existing;
     })();
@@ -100,28 +103,29 @@ const updateFeaturesIntoDb = async (id, payload) => {
         throw new AppError("No changes detected. Features section is already up to date", HttpStatusCode.Conflict);
     }
 
-    // ✅ Validate items count — must have at least 1
-    if (payload.items !== undefined && payload.items.length === 0) {
-        throw new AppError("Features items cannot be empty", HttpStatusCode.BadRequest);
-    }
-
-    // ✅ Merge items by index — keep existing icon if no new icon provided
     if (payload.items !== undefined) {
-        payload.items = payload.items.map((incomingItem, index) => {
-            const existingItem = existingFeatures.items[index];
-            if (!existingItem) {
-                // ✅ New item being added — icon is required
-                if (!incomingItem.icon) {
-                    throw new AppError(`Icon is required for new feature item at index ${index}`, HttpStatusCode.BadRequest);
-                }
-                return incomingItem;
-            }
+        // ✅ Check duplicate order values
+        const orders = payload.items.map((item) => item.order);
+        const uniqueOrders = new Set(orders);
+        if (uniqueOrders.size !== orders.length) {
+            throw new AppError("Duplicate order values found. Each item must have a unique order", HttpStatusCode.BadRequest);
+        }
+
+        // ✅ Merge by order — keep existing icon if no new icon provided
+        payload.items = payload.items.map((incomingItem) => {
+            const existingItem = existingFeatures.items.find(
+                (item) => item.order === incomingItem.order
+            );
             return {
-                icon: incomingItem.icon || existingItem.icon,
-                title: incomingItem.title || existingItem.title,
-                description: incomingItem.description || existingItem.description,
+                order: incomingItem.order,
+                icon: incomingItem.icon || existingItem?.icon || "",
+                title: incomingItem.title,
+                description: incomingItem.description,
             };
         });
+
+        // ✅ Sort items by order before saving
+        payload.items.sort((a, b) => a.order - b.order);
     }
 
     const updated = await Features.findByIdAndUpdate(

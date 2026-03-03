@@ -1,7 +1,6 @@
 import express from "express";
 import { consultantController } from "./consultant.controller.js";
 import { consultantValidation } from "./consultant.validation.js";
-import { multerUpload } from "../../../core/middlewares/multer.js";
 import { verifyToken, adminMiddleware } from "../../../core/middlewares/authMiddleware.js";
 import validateRequest from "../../../core/middlewares/validateRequest.js";
 
