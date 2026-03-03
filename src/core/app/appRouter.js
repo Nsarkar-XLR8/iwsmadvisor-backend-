@@ -21,6 +21,7 @@ import { visionRoutes } from '../../entities/CMS/vision/vision.routes.js';
 import { informationRoutes } from '../../entities/CMS/information/information.routes.js';
 import { consultantRoutes } from '../../entities/CMS/consultant/consultant.routes.js';
 import { missionRoutes } from '../../entities/CMS/mission/mission.routes.js';
+import { strengthRoutes } from '../../entities/CMS/strength/strength.routes.js';
 
 const router = express.Router();
 
@@ -47,6 +48,7 @@ router.use('/v1/vision', visionRoutes);
 router.use('/v1/information', informationRoutes);
 router.use('/v1/consultant', consultantRoutes);
 router.use('/v1/mission', missionRoutes);
+router.use('/v1/strength', strengthRoutes);
 
 
 export default router;
