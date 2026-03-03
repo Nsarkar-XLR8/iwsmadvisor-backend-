@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const featureItemSchema = new mongoose.Schema(
     {
+        order: { type: Number, required: true },
         icon: { type: String, default: "" },
         title: { type: String, required: true, trim: true },
         description: { type: String, required: true, trim: true },

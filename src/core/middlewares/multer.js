@@ -41,3 +41,6 @@ const multerUpload = (fields) => upload.fields(fields);
 
 // Export both options
 export { upload, multerUpload };
+
+// ✅ Add this to your multer.js
+export const multerUploadAny = () => upload.any();
