@@ -26,12 +26,12 @@ const app = express();
 // Set up security middleware
 app.use(helmet());
 app.use(
-    cors({
-      origin: true,
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    })
-  );
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  })
+);
 app.use(xssClean());
 app.use(mongoSanitize());
 
@@ -62,6 +62,6 @@ app.use(errorHandler);
 
 logger.info('Middleware stack initialized');
 
-export  { app }; 
+export { app };
 
 
