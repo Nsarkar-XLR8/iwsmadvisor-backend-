@@ -8,6 +8,7 @@ const router = express.Router();
 
 // ✅ Public
 router.get("/get", informationController.getInformation);
+router.get("/all",  informationController.getAllInformations);
 
 // ✅ Admin only
 router.post(

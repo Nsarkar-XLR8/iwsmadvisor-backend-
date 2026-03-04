@@ -68,9 +68,49 @@ const deleteInformationFromDb = async (id) => {
     return deleted;
 };
 
+
+const getAllInformationsFromDb = async (query) => {
+    const {
+        page      = 1,
+        limit     = 10,
+        sortBy    = "createdAt",
+        sortOrder = "desc",
+    } = query;
+
+    const ALLOWED_SORT_FIELDS = ["createdAt", "updatedAt", "title"];
+    const safePage      = Math.max(1, Number(page));
+    const safeLimit     = Math.min(Math.max(1, Number(limit)), 100);
+    const safeSortBy    = ALLOWED_SORT_FIELDS.includes(sortBy) ? sortBy : "createdAt";
+    const safeSortOrder = sortOrder === "asc" ? 1 : -1;
+
+    const sort = { [safeSortBy]: safeSortOrder };
+    const skip = (safePage - 1) * safeLimit;
+
+    const [totalDocs, informations] = await Promise.all([
+        Information.countDocuments(),
+        Information.find().sort(sort).skip(skip).limit(safeLimit).lean(),
+    ]);
+
+    const totalPages = Math.ceil(totalDocs / safeLimit);
+
+    return {
+        data: informations,
+        meta: {
+            totalDocs,
+            totalPages,
+            currentPage: safePage,
+            limit:       safeLimit,
+            hasNextPage: safePage < totalPages,
+            hasPrevPage: safePage > 1,
+        },
+    };
+};
+
 export const informationService = {
     createInformationIntoDb,
     getInformationFromDb,
     updateInformationIntoDb,
     deleteInformationFromDb,
+    getAllInformationsFromDb
+
 };

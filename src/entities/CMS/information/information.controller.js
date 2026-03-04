@@ -83,6 +83,11 @@ const updateInformation = catchAsync(async (req, res) => {
     return generateResponse(res, 200, true, "Contact information updated successfully", updated);
 });
 
+const getAllInformations = catchAsync(async (req, res) => {
+    const result = await informationService.getAllInformationsFromDb(req.query);
+    return generateResponse(res, 200, true, "Contact informations fetched successfully", result.data, result.meta);
+});
+
 const deleteInformation = catchAsync(async (req, res) => {
     await informationService.deleteInformationFromDb(req.params.informationId);
     return generateResponse(res, 200, true, "Contact information deleted successfully", null);
@@ -93,4 +98,5 @@ export const informationController = {
     getInformation,
     updateInformation,
     deleteInformation,
+    getAllInformations
 };
