@@ -66,14 +66,19 @@ const updateBanner = catchAsync(async (req, res) => {
     if (btn1 !== undefined) payload.btn1 = btn1;
     if (btn2 !== undefined) payload.btn2 = btn2;
 
-    // ✅ same fix for update
+    // ✅ Upload new image only if provided
     const imageFile = req.files?.image?.[0];
     if (imageFile) {
         const cloudinaryResult = await cloudinaryUpload(imageFile.path, `banner-${Date.now()}`, "banners");
-        if (!cloudinaryResult || cloudinaryResult === "file upload failed" || !cloudinaryResult.url) {
+        if (!cloudinaryResult || !cloudinaryResult.url) {
             return generateResponse(res, 500, false, "Image upload failed", null);
         }
         payload.image = cloudinaryResult.url;
+    }
+
+    // ✅ Check AFTER image processing — not before
+    if (Object.keys(payload).length === 0) {
+        return generateResponse(res, 400, false, "At least one field must be provided to update", null);
     }
 
     const updated = await bannerService.updateBannerIntoDb(req.params.bannerId, payload);
