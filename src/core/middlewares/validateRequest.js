@@ -1,13 +1,4 @@
-// const validateRequest = (schema) => (req, res, next) => {
-//     const { error } = schema.validate(req.body);
-//     if (error) {
-//       return res.status(400).json({ error: error.details[0].message });
-//     }
-//     next();
-// };
-
-// export default validateRequest;
-
+import { BadRequestError } from '../../errors/index.js';
 
 const validateRequest = (schema) => (req, res, next) => {
   // ✅ Universally parse any JSON strings from form-data before validation
@@ -27,9 +18,14 @@ const validateRequest = (schema) => (req, res, next) => {
     }
   });
 
-  const { error } = schema.validate(req.body);
+  const { error } = schema.validate(req.body, { abortEarly: false });
   if (error) {
-    return res.status(400).json({ error: error.details[0].message });
+    const fieldErrors = error.details.map((detail) => ({
+      field: detail.path.join('.'),
+      message: detail.message,
+      type: detail.type,
+    }));
+    throw new BadRequestError('Request validation failed.', fieldErrors);
   }
 
   next();
