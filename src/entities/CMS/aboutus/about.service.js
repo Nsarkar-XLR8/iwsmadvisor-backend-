@@ -17,11 +17,12 @@ const getAboutFromDb = async () => {
     return about;
 };
 
-const updateAboutIntoDb = async (payload) => {
-    const existingAbout = await About.findOne();
-    if (!existingAbout) throw new AppError("About section not found. Create one first.", HttpStatusCode.NotFound);
+const updateAboutIntoDb = async (id, payload) => {
+    // ✅ Find by ID not findOne
+    const existingAbout = await About.findById(id);
+    if (!existingAbout) throw new AppError("About section not found", HttpStatusCode.NotFound);
 
-    // ✅ Check if the incoming payload is identical to the current document
+    // ✅ Check all fields for changes
     const fields = ["title", "subtitle", "descriptionTitle", "description", "btnName", "image"];
     const isSame = fields.every((field) => {
         if (payload[field] === undefined) return true;
@@ -30,13 +31,15 @@ const updateAboutIntoDb = async (payload) => {
     if (isSame) throw new AppError("No changes detected. About is already up to date", HttpStatusCode.Conflict);
 
     const updated = await About.findByIdAndUpdate(
-        existingAbout._id,
+        id,
         { $set: payload },
         { new: true, runValidators: true }
     );
 
     return updated;
 };
+
+
 
 const deleteAboutFromDb = async () => {
     const deleted = await About.findOneAndDelete();
