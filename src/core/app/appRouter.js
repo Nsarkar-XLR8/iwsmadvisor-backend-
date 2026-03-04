@@ -24,6 +24,7 @@ import { missionRoutes } from '../../entities/CMS/mission/mission.routes.js';
 import { strengthRoutes } from '../../entities/CMS/strength/strength.routes.js';
 import { itemsRoutes } from '../../entities/CMS/items/items.routes.js';
 import { certificationRoutes } from '../../entities/CMS/certifications/certification.routes.js';
+import { expertiseRoutes } from '../../entities/CMS/expertise/expertise.routes.js';
 
 const router = express.Router();
 
@@ -53,6 +54,7 @@ router.use('/v1/mission', missionRoutes);
 router.use('/v1/strength', strengthRoutes);
 router.use('/v1/items', itemsRoutes);
 router.use('/v1/certifications', certificationRoutes);
+router.use('/v1/expertise', expertiseRoutes);
 
 
 export default router;
