@@ -62,8 +62,8 @@ const updateInformationIntoDb = async (payload) => {
     return updated;
 };
 
-const deleteInformationFromDb = async () => {
-    const deleted = await Information.findOneAndDelete();
+const deleteInformationFromDb = async (id) => {
+    const deleted = await Information.findByIdAndDelete(id);
     if (!deleted) throw new AppError("Contact information not found", HttpStatusCode.NotFound);
     return deleted;
 };

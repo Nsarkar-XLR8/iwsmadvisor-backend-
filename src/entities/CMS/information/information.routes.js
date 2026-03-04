@@ -27,7 +27,7 @@ router.patch(
 );
 
 router.delete(
-    "/delete",
+    "/delete/:informationId",
     verifyToken,
     adminMiddleware,
     informationController.deleteInformation,
