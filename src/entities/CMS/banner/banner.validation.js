@@ -9,11 +9,11 @@ const createBannerSchema = Joi.object({
 });
 
 const updateBannerSchema = Joi.object({
-    title: Joi.string().trim().optional(),
-    subTitle: Joi.string().trim().optional(),
-    btn1: Joi.string().trim().optional(),
-    btn2: Joi.string().trim().optional(),
-}).min(1).messages({ "object.min": "At least one field must be provided to update" });
+    title: Joi.string().trim().optional().messages({ "string.empty": "Title cannot be empty" }),
+    subTitle: Joi.string().trim().optional().messages({ "string.empty": "SubTitle cannot be empty" }),
+    btn1: Joi.string().trim().optional().messages({ "string.empty": "Button 1 cannot be empty" }),
+    btn2: Joi.string().trim().optional().messages({ "string.empty": "Button 2 cannot be empty" }),
+});
 
 
 export const bannerValidation = {
