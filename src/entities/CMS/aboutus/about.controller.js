@@ -29,21 +29,32 @@ const updateAbout = catchAsync(async (req, res) => {
     const { title, subtitle, descriptionTitle, description, btnName } = req.body;
     const payload = {};
 
-    if (title !== undefined) payload.title = title;
-    if (subtitle !== undefined) payload.subtitle = subtitle;
-    if (descriptionTitle !== undefined) payload.descriptionTitle = descriptionTitle;
-    if (description !== undefined) payload.description = description;
-    if (btnName !== undefined) payload.btnName = btnName;
+    if (title            !== undefined) payload.title            = title.trim();
+    if (subtitle         !== undefined) payload.subtitle         = subtitle.trim();
+    if (descriptionTitle !== undefined) payload.descriptionTitle = descriptionTitle.trim();
+    if (description      !== undefined) payload.description      = description.trim();
+    if (btnName          !== undefined) payload.btnName          = btnName.trim();
 
+    // ✅ Upload new image only if provided
     const imageFile = req.files?.image?.[0];
     if (imageFile) {
         const cloudinaryResult = await cloudinaryUpload(imageFile.path, `about-${Date.now()}`, "about");
+        if (!cloudinaryResult || !cloudinaryResult.url) {
+            return generateResponse(res, 500, false, "Image upload failed", null);
+        }
         payload.image = cloudinaryResult.url;
     }
 
-    const updated = await aboutService.updateAboutIntoDb(payload);
+    // ✅ Check AFTER image processing
+    if (Object.keys(payload).length === 0) {
+        return generateResponse(res, 400, false, "At least one field must be provided to update", null);
+    }
+
+    // ✅ Pass req.params.aboutId to service
+    const updated = await aboutService.updateAboutIntoDb(req.params.aboutId, payload);
     return generateResponse(res, 200, true, "About section updated successfully", updated);
 });
+
 
 const deleteAbout = catchAsync(async (req, res) => {
     await aboutService.deleteAboutFromDb();

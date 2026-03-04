@@ -14,7 +14,7 @@ const updateAboutSchema = Joi.object({
     descriptionTitle: Joi.string().trim().optional().messages({ "string.empty": "Description title cannot be empty" }),
     description:      Joi.string().trim().optional().messages({ "string.empty": "Description cannot be empty" }),
     btnName:          Joi.string().trim().optional().messages({ "string.empty": "Button name cannot be empty" }),
-}).min(1).messages({ "object.min": "At least one field must be provided to update" });
+});
 
 export const aboutValidation = {
     createAboutSchema,
