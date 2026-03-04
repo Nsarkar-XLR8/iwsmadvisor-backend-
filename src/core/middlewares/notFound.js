@@ -1,3 +1,5 @@
-export default (req, res) => {
-    res.status(404).json({ message: 'Route not found' });
+import { NotFoundError } from '../../errors/index.js';
+
+export default (req, res, next) => {
+    next(new NotFoundError('Route', req.originalUrl));
 };
