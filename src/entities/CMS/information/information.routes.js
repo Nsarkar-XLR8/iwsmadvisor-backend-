@@ -22,12 +22,12 @@ router.patch(
     "/update",
     verifyToken,
     adminMiddleware,
-    validateRequest(informationValidation.updateInformationSchema),
+    // validateRequest(informationValidation.updateInformationSchema),
     informationController.updateInformation,
 );
 
 router.delete(
-    "/delete",
+    "/delete/:informationId",
     verifyToken,
     adminMiddleware,
     informationController.deleteInformation,

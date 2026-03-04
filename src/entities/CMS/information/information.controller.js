@@ -84,7 +84,7 @@ const updateInformation = catchAsync(async (req, res) => {
 });
 
 const deleteInformation = catchAsync(async (req, res) => {
-    await informationService.deleteInformationFromDb();
+    await informationService.deleteInformationFromDb(req.params.informationId);
     return generateResponse(res, 200, true, "Contact information deleted successfully", null);
 });
 
