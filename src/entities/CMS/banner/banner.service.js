@@ -31,22 +31,22 @@ const updateBannerIntoDb = async (id, payload) => {
     const existingBanner = await Banner.findById(id);
     if (!existingBanner) throw new AppError("Banner not found", HttpStatusCode.NotFound);
 
-    // ✅ Check if the incoming payload is identical to the current document
+    // ✅ Check no changes first
     const fields = ["title", "subTitle", "btn1", "btn2", "image"];
     const isSame = fields.every((field) => {
-        if (payload[field] === undefined) return true; // field not being updated — skip
+        if (payload[field] === undefined) return true;
         return payload[field]?.trim?.() === existingBanner[field]?.trim?.();
     });
     if (isSame) throw new AppError("No changes detected. Banner is already up to date", HttpStatusCode.Conflict);
 
-    // ✅ Check if another banner already has the same title + subTitle combination
+    // ✅ Check duplicate title + subTitle combination
     if (payload.title || payload.subTitle) {
         const duplicate = await Banner.findOne({
             _id: { $ne: id },
             title: payload.title?.trim() || existingBanner.title,
             subTitle: payload.subTitle?.trim() || existingBanner.subTitle,
         });
-        if (duplicate) throw new AppError("Another banner with the same title and sub title already exists", HttpStatusCode.Conflict);
+        if (duplicate) throw new AppError("Another banner with the same title and subtitle already exists", HttpStatusCode.Conflict);
     }
 
     const updated = await Banner.findByIdAndUpdate(
