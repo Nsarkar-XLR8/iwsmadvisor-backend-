@@ -6,8 +6,9 @@ const createInformationSchema = Joi.object({
     email: Joi.string().trim().email().required().messages({ "any.required": "Email is required", "string.email": "Email must be valid", "string.empty": "Email cannot be empty" }),
     phone: Joi.string().trim().required().messages({ "any.required": "Phone is required", "string.empty": "Phone cannot be empty" }),
     address: Joi.string().trim().required().messages({ "any.required": "Address is required", "string.empty": "Address cannot be empty" }),
-    mapUrl: Joi.string().trim().uri().required().messages({ "any.required": "Map URL is required", "string.uri": "Map URL must be a valid URL", "string.empty": "Map URL cannot be empty" }),
+    mapUrl: Joi.string().trim().required().messages({ "any.required": "Map URL is required", "string.empty": "Map URL cannot be empty" }),
 });
+
 
 const updateInformationSchema = Joi.object({
     title: Joi.string().trim().optional().messages({ "string.empty": "Title cannot be empty" }),
@@ -15,7 +16,7 @@ const updateInformationSchema = Joi.object({
     email: Joi.string().trim().email().optional().messages({ "string.email": "Email must be valid", "string.empty": "Email cannot be empty" }),
     phone: Joi.string().trim().optional().messages({ "string.empty": "Phone cannot be empty" }),
     address: Joi.string().trim().optional().messages({ "string.empty": "Address cannot be empty" }),
-    mapUrl: Joi.string().trim().uri().optional().messages({ "string.uri": "Map URL must be a valid URL", "string.empty": "Map URL cannot be empty" }),
+    mapUrl: Joi.string().trim().optional().messages({ "string.empty": "Map URL cannot be empty" }),
 })
 
 export const informationValidation = {
