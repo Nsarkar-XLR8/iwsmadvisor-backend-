@@ -12,6 +12,7 @@ const featureItemSchema = new mongoose.Schema(
 
 const featuresSchema = new mongoose.Schema(
     {
+        order: { type: Number, required: true },
         title: { type: String, required: true, trim: true },
         subtitle: { type: String, required: true, trim: true },
         items: { type: [featureItemSchema], default: [] },
