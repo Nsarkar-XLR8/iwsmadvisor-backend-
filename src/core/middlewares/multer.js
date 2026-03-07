@@ -19,17 +19,19 @@ if (!existsSync(fileDir)) mkdirSync(fileDir, { recursive: true });
 
 // Set up storage engine for multer
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, imageDir);
-    } else {
-      cb(null, fileDir);
-    }
-  },
-  filename: function (req, file, cb) {
-    const randomName = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + randomName + "-" + file.originalname);
-  },
+    destination: function (req, file, cb) {
+        if (file.mimetype.startsWith("image/")) {
+            cb(null, imageDir);
+        } else {
+            cb(null, fileDir);
+        }
+    },
+    filename: function (req, file, cb) {
+        const randomName    = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        // ✅ Sanitize filename — replace spaces and special chars with underscore
+        const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_");
+        cb(null, file.fieldname + "-" + randomName + "-" + sanitizedName);
+    },
 });
 
 // Create the base multer instance
