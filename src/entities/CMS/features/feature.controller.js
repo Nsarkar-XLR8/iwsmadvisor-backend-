@@ -12,9 +12,16 @@ const buildIconMap = async (files) => {
     const iconMap = {};
     if (!files || !Array.isArray(files)) return iconMap;
 
+    // ✅ Debug — see what multer gives us
+    console.log("files →", files.map(f => ({
+        fieldname: f.fieldname,
+        path: f.path,
+        mimetype: f.mimetype,
+        size: f.size,
+    })));
+
     await Promise.all(
         files.map(async (file) => {
-            // ✅ Match field names like icon_1, icon_2, icon_3
             const match = file.fieldname.match(/^icon_(\d+)$/);
             if (match) {
                 const order = Number(match[1]);
@@ -28,17 +35,36 @@ const buildIconMap = async (files) => {
 
 // ✅ Helper — upload icon by order number
 const uploadIcon = async (file, order) => {
+    // ✅ Debug — see exact file path being passed
+    console.log("uploadIcon →", {
+        fieldname: file.fieldname,
+        path:      file.path,
+        mimetype:  file.mimetype,
+        size:      file.size,
+    });
+
     const result = await cloudinaryUpload(
         file.path,
         `features-icon-order-${order}-${Date.now()}`,
         "features"
     );
-    if (!result || !result.url) throw new Error(`Icon upload failed for item order ${order}`);
+
+    // ✅ Debug — see what cloudinary returns
+    console.log("cloudinaryUpload result →", result);
+
+    if (!result || result === "file upload failed" || !result.url) {
+        throw new Error(`Icon upload failed for item order ${order}`);
+    }
     return result.url;
 };
 
 const createFeatures = catchAsync(async (req, res) => {
-    const { title, subtitle, items } = req.body;
+    const { order, title, subtitle, items } = req.body;
+
+    // ✅ Validate section order
+    if (!order || isNaN(order) || order < 1) {
+        return generateResponse(res, 400, false, "Order is required and must be at least 1", null);
+    }
 
     if (!items || !Array.isArray(items) || items.length === 0) {
         return generateResponse(res, 400, false, "At least one feature item is required", null);
@@ -63,7 +89,6 @@ const createFeatures = catchAsync(async (req, res) => {
         return generateResponse(res, 400, false, "Duplicate order values found. Each item must have a unique order", null);
     }
 
-    // ✅ Build icon map from field names like icon_1, icon_2
     const iconMap = await buildIconMap(req.files);
 
     const itemsWithIcons = items.map((item) => ({
@@ -73,7 +98,13 @@ const createFeatures = catchAsync(async (req, res) => {
         description: item.description.trim(),
     }));
 
-    const created = await featuresService.createFeaturesIntoDb({ title, subtitle, items: itemsWithIcons });
+    const created = await featuresService.createFeaturesIntoDb({
+        order: Number(order),
+        title,
+        subtitle,
+        items: itemsWithIcons,
+    });
+
     return generateResponse(res, 201, true, "Features section created successfully", created);
 });
 
@@ -87,14 +118,16 @@ const getFeaturesById = catchAsync(async (req, res) => {
     return generateResponse(res, 200, true, "Features section fetched successfully", features);
 });
 
+
 const updateFeatures = catchAsync(async (req, res) => {
-    const { title, subtitle, items } = req.body;
+    const { order, title, subtitle, items } = req.body;
     const payload = {};
 
+    if (order    !== undefined) payload.order    = Number(order);
     if (title    !== undefined) payload.title    = title;
     if (subtitle !== undefined) payload.subtitle = subtitle;
 
-    // ✅ Build icon map first — works even without items in body
+    // ✅ Build iconMap only ONCE
     const iconMap = await buildIconMap(req.files);
 
     if (items !== undefined) {
@@ -129,9 +162,8 @@ const updateFeatures = catchAsync(async (req, res) => {
         }));
 
     } else if (Object.keys(iconMap).length > 0) {
-        // ✅ Icon-only update — fetch existing items and merge icons by order
+        // ✅ Icon-only update — iconMap already built above, no second call
         const existingFeatures = await featuresService.getFeaturesByIdFromDb(req.params.featuresId);
-
         payload.items = existingFeatures.items.map((item) => ({
             order:       item.order,
             icon:        iconMap[item.order] || item.icon || "",
@@ -140,7 +172,6 @@ const updateFeatures = catchAsync(async (req, res) => {
         }));
     }
 
-    // ✅ Nothing to update
     if (Object.keys(payload).length === 0) {
         return generateResponse(res, 400, false, "At least one field must be provided to update", null);
     }
