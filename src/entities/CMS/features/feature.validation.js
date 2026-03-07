@@ -12,18 +12,27 @@ const featureItemSchema = Joi.object({
 });
 
 const createFeaturesSchema = Joi.object({
-    title: Joi.string().trim().required().messages({ "any.required": "Title is required", "string.empty": "Title cannot be empty" }),
+    order:    Joi.number().integer().min(1).required().messages({
+        "any.required": "Order is required",
+        "number.min":   "Order must be at least 1",
+        "number.base":  "Order must be a number",
+    }),
+    title:    Joi.string().trim().required().messages({ "any.required": "Title is required",    "string.empty": "Title cannot be empty" }),
     subtitle: Joi.string().trim().required().messages({ "any.required": "Subtitle is required", "string.empty": "Subtitle cannot be empty" }),
-    items: Joi.array().items(featureItemSchema).min(1).required().messages({
+    items:    Joi.array().items(featureItemSchema).min(1).required().messages({
         "any.required": "Features items are required",
-        "array.min": "At least one feature item is required",
+        "array.min":    "At least one feature item is required",
     }),
 });
 
 const updateFeaturesSchema = Joi.object({
-    title: Joi.string().trim().optional().messages({ "string.empty": "Title cannot be empty" }),
+    order:    Joi.number().integer().min(1).optional().messages({
+        "number.min":  "Order must be at least 1",
+        "number.base": "Order must be a number",
+    }),
+    title:    Joi.string().trim().optional().messages({ "string.empty": "Title cannot be empty" }),
     subtitle: Joi.string().trim().optional().messages({ "string.empty": "Subtitle cannot be empty" }),
-    items: Joi.array().items(featureItemSchema).min(1).optional().messages({
+    items:    Joi.array().items(featureItemSchema).min(1).optional().messages({
         "array.min": "At least one feature item is required",
     }),
 });
