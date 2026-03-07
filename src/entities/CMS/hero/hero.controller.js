@@ -4,23 +4,28 @@ import { generateResponse } from "../../../lib/responseFormate.js";
 import { cloudinaryUpload } from "../../../lib/cloudinaryUpload.js";
 
 const createHero = catchAsync(async (req, res) => {
-    // ✅ Image comes from form-data via multer
-    const imageFile = req.files?.image?.[0];
-    if (!imageFile) {
-        return generateResponse(res, 400, false, "Hero image is required", null);
+    const { order, title, subtitle } = req.body;
+
+    // ✅ Validate order
+    if (!order || isNaN(order) || Number(order) < 1) {
+        return generateResponse(res, 400, false, "Order is required and must be at least 1", null);
     }
+    if (!title?.trim()) return generateResponse(res, 400, false, "Title is required", null);
+    if (!subtitle?.trim()) return generateResponse(res, 400, false, "Subtitle is required", null);
 
-    const { title, subtitle } = req.body;
+    // ✅ Validate image
+    const imageFile = req.files?.image?.[0];
+    if (!imageFile) return generateResponse(res, 400, false, "Hero image is required", null);
 
-    // ✅ Upload image to cloudinary
     const cloudinaryResult = await cloudinaryUpload(imageFile.path, `hero-${Date.now()}`, "hero");
     if (!cloudinaryResult || !cloudinaryResult.url) {
         return generateResponse(res, 500, false, "Image upload failed", null);
     }
 
     const created = await heroService.createHeroIntoDb({
-        title,
-        subtitle,
+        order: Number(order),
+        title: title.trim(),
+        subtitle: subtitle.trim(),
         image: cloudinaryResult.url,
     });
 
@@ -38,10 +43,10 @@ const getHeroById = catchAsync(async (req, res) => {
 });
 
 const updateHero = catchAsync(async (req, res) => {
-    const { title, subtitle } = req.body;
+    const { order, title, subtitle } = req.body;
     const payload = {};
 
-    // ✅ Only add fields that are actually provided
+    if (order !== undefined) payload.order = Number(order);
     if (title !== undefined) payload.title = title.trim();
     if (subtitle !== undefined) payload.subtitle = subtitle.trim();
 
@@ -55,13 +60,23 @@ const updateHero = catchAsync(async (req, res) => {
         payload.image = cloudinaryResult.url;
     }
 
-    // ✅ Nothing to update
     if (Object.keys(payload).length === 0) {
         return generateResponse(res, 400, false, "At least one field must be provided to update", null);
     }
 
     const updated = await heroService.updateHeroIntoDb(req.params.heroId, payload);
     return generateResponse(res, 200, true, "Hero section updated successfully", updated);
+});
+
+const swapHeroOrder = catchAsync(async (req, res) => {
+    const { firstId, secondId } = req.body;
+
+    if (!firstId) return generateResponse(res, 400, false, "First hero ID is required", null);
+    if (!secondId) return generateResponse(res, 400, false, "Second hero ID is required", null);
+    if (firstId === secondId) return generateResponse(res, 400, false, "Cannot swap a hero with itself", null);
+
+    const result = await heroService.swapHeroOrderInDb(firstId, secondId);
+    return generateResponse(res, 200, true, "Hero order swapped successfully", result);
 });
 
 const deleteHero = catchAsync(async (req, res) => {
@@ -74,5 +89,6 @@ export const heroController = {
     getAllHeroes,
     getHeroById,
     updateHero,
+    swapHeroOrder,
     deleteHero,
 };

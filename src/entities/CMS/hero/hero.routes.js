@@ -22,6 +22,13 @@ router.post(
 );
 
 router.patch(
+    "/swap-order",
+    verifyToken,
+    adminMiddleware,
+    heroController.swapHeroOrder,
+);
+
+router.patch(
     "/:heroId",
     verifyToken,
     adminMiddleware,
