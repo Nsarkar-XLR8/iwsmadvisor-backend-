@@ -131,9 +131,12 @@ const updateStatsIntoDb = async (id, payload) => {
     return updated;
 };
 
-const deleteStatsFromDb = async (id) => {
-    const deleted = await Stats.findByIdAndDelete(id);
-    if (!deleted) throw new AppError("Stats section not found", HttpStatusCode.NotFound);
+const deleteStatsFromDb = async (statsId) => {
+    const deleted = await Stats.findByIdAndDelete(statsId);
+
+    if (!deleted)
+        throw new AppError("Stats section not found", HttpStatusCode.NotFound);
+
     return deleted;
 };
 
