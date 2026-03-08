@@ -135,8 +135,18 @@ const updateStats = catchAsync(async (req, res) => {
 });
 
 const deleteStats = catchAsync(async (req, res) => {
-    await statsService.deleteStatsFromDb();
-    return generateResponse(res, 200, true, "Stats section deleted successfully", null);
+
+    const { statsId } = req.params;
+
+    await statsService.deleteStatsFromDb(statsId);
+
+    return generateResponse(
+        res,
+        200,
+        true,
+        "Stats section deleted successfully",
+        null
+    );
 });
 
 export const statsController = {
