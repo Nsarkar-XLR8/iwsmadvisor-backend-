@@ -14,7 +14,7 @@ const createInformationIntoDb = async (payload) => {
     }
 
     // ✅ Validate mapUrl is a Google Maps embed URL
-    if (!payload.mapUrl.includes("google.com/maps")) {
+    if (!payload.mapUrl) {
         throw new AppError("Map URL must be a valid Google Maps embed URL", HttpStatusCode.BadRequest);
     }
 
