@@ -87,9 +87,11 @@ const updateConsultant = catchAsync(async (req, res) => {
  * Delete Consultant Controller
  */
 const deleteConsultant = catchAsync(async (req, res) => {
+    const { consultantId } = req.params;
+
     if (handleValidationErrors(req, res)) return;
 
-    await consultantService.deleteConsultantFromDb(req.params.id);
+    await consultantService.deleteConsultantFromDb(consultantId);
     return generateResponse(res, 200, true, "Consultant deleted successfully", null);
 });
 

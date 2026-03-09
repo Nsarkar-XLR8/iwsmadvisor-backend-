@@ -87,8 +87,8 @@ const updateConsultantIntoDb = async (id, payload) => {
 /**
  * Delete Consultant
  */
-const deleteConsultantFromDb = async (id) => {
-    const deleted = await Consultant.findByIdAndDelete(id);
+const deleteConsultantFromDb = async (consultantId) => {
+    const deleted = await Consultant.findByIdAndDelete(consultantId);
     if (!deleted) {
         throw new AppError("Consultant not found", HttpStatusCode.NotFound);
     }
