@@ -36,7 +36,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
+// app.use(globalLimiter);
 app.use(xssClean());
 app.use(mongoSanitize());
 
@@ -49,8 +49,8 @@ app.use(express.json({ limit: '10000kb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Set up rate limiting middleware
-app.use(globalLimiter);
+
+
 
 // Set up static files middleware
 const uploadPath = path.resolve(__dirname, "../uploads");
