@@ -20,7 +20,7 @@ const createInformation = catchAsync(async (req, res) => {
     }
 
     // ✅ Validate mapUrl
-    if (!mapUrl.includes("google.com/maps")) {
+    if (!mapUrl) {
         return generateResponse(res, 400, false, "Map URL must be a valid Google Maps embed URL", null);
     }
 
