@@ -1,3 +1,8 @@
+# SwaggerAPI Doc
+http://localhost:5000/api-docs/
+
+
+
 # Node Express Boilerplate
 
 This is a boilerplate for building a REST API using Node.js and Express.js. The boilerplate includes the following features:
