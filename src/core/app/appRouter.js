@@ -28,6 +28,7 @@ import { expertiseRoutes } from '../../entities/CMS/expertise/expertise.routes.j
 import { applicationRoutes } from '../../entities/application/application.routes.js';
 import { transformRoutes } from '../../entities/CMS/transform/transform.routes.js';
 import { numberRoutes } from '../../entities/CMS/number/number.routes.js';
+import { navbarRoutes } from '../../entities/CMS/navbar/navbar.routes.js';
 
 const router = express.Router();
 
@@ -61,6 +62,7 @@ router.use('/v1/expertise', expertiseRoutes);
 router.use('/v1/application', applicationRoutes);
 router.use("/v1/transform", transformRoutes);
 router.use('/v1/number', numberRoutes);
+router.use('/v1/navbar', navbarRoutes);
 
 
 export default router;
