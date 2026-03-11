@@ -1,9 +1,9 @@
 import express from "express";
 import { applicationController } from "./application.controller.js";
-import { applicationValidation } from "./application.validation.js";
+// import { applicationValidation } from "./application.validation.js";
 import { multerUpload } from "../../core/middlewares/multer.js";
 import { adminMiddleware, verifyToken } from "../../core/middlewares/authMiddleware.js";
-import validateRequest from "../../core/middlewares/validateRequest.js";
+// import validateRequest from "../../core/middlewares/validateRequest.js";
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ const router = express.Router();
 router.post(
     "/create",
     multerUpload([{ name: "resumeCV", maxCount: 1 }]),
-    validateRequest(applicationValidation.createApplicationSchema),
+    // validateRequest(applicationValidation.createApplicationSchema),
     applicationController.createApplication,
 );
 
