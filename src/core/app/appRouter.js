@@ -30,6 +30,7 @@ import { transformRoutes } from '../../entities/CMS/transform/transform.routes.j
 import { numberRoutes } from '../../entities/CMS/number/number.routes.js';
 import { navbarRoutes } from '../../entities/CMS/navbar/navbar.routes.js';
 import { logoRoutes } from '../../entities/CMS/logo/logo.routes.js';
+import { servicePageTitleRoutes } from '../../entities/CMS/servicePageTitle/servicePageTitle.routes.js';
 
 const router = express.Router();
 
@@ -65,6 +66,7 @@ router.use("/v1/transform", transformRoutes);
 router.use('/v1/number', numberRoutes);
 router.use('/v1/navbar', navbarRoutes);
 router.use('/v1/logo', logoRoutes);
+router.use('/v1/service-page-title', servicePageTitleRoutes);
 
 
 export default router;
