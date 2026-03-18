@@ -25,7 +25,7 @@ router.patch(
     verifyToken,
     adminMiddleware,
     multerUpload([{ name: "logo", maxCount: 1 }]),
-    validateRequest(footerValidation.updateFooterSchema),
+    // validateRequest(footerValidation.updateFooterSchema),
     footerController.updateFooter,
 );
 
