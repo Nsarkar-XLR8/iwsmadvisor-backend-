@@ -18,49 +18,44 @@ const getFooterFromDb = async () => {
 };
 
 const updateFooterIntoDb = async (payload) => {
+    // 1. Get the single footer instance
     const existingFooter = await Footer.findOne();
-    if (!existingFooter) throw new AppError("Footer not found. Create one first.", HttpStatusCode.NotFound);
+    if (!existingFooter) throw new AppError("Footer not found.", HttpStatusCode.NotFound);
 
-    // ✅ Check scalar fields for changes
+    // 2. Deep Comparison for Arrays (Order-independent check)
+    const isSameArray = (incoming, existing) => {
+        if (incoming === undefined) return true;
+        return JSON.stringify(incoming) === JSON.stringify(existing.toObject());
+    };
+
+    // 3. Scalar Comparison
     const scalarFields = ["description", "email", "phone", "copyright", "logo"];
-    const isScalarSame = scalarFields.every((field) => {
+    const isScalarSame = scalarFields.every(field => {
         if (payload[field] === undefined) return true;
-        return payload[field]?.trim?.() === existingFooter[field]?.trim?.();
+        return String(payload[field]).trim() === String(existingFooter[field] || "").trim();
     });
 
-    // ✅ Check socialLinks for changes
-    const isSocialSame = !payload.socialLinks || Object.keys(payload.socialLinks).every((key) => {
+    // 4. Social Links Comparison
+    const isSocialSame = !payload.socialLinks || Object.keys(payload.socialLinks).every(key => {
         return payload.socialLinks[key]?.trim() === existingFooter.socialLinks?.[key]?.trim();
     });
 
-    // ✅ Check link arrays for changes
+    // 5. Array Fields Comparison
     const linkFields = ["quickLinks", "consultingLinks", "contactLinks"];
-    const isLinksSame = linkFields.every((field) => {
-        if (payload[field] === undefined) return true;
-        const incoming = JSON.stringify(payload[field]);
-        // ✅ Convert Mongoose array to plain object before stringify
-        const existing = JSON.stringify(existingFooter[field].toObject?.() ?? existingFooter[field]);
-        return incoming === existing;
-    });
+    const isLinksSame = linkFields.every(field => isSameArray(payload[field], existingFooter[field]));
 
-    if (isScalarSame && isSocialSame && isLinksSame) {
-        throw new AppError("No changes detected. Footer is already up to date", HttpStatusCode.Conflict);
+    // 6. Final Conflict Check
+    if (isScalarSame && isSocialSame && isLinksSame && !payload.logo) {
+        throw new AppError("No changes detected.", HttpStatusCode.Conflict);
     }
 
-    // ✅ Merge socialLinks — convert Mongoose subdoc to plain object first
-    if (payload.socialLinks) {
-        const existingSocial = existingFooter.socialLinks?.toObject?.() ?? existingFooter.socialLinks ?? {};
-        payload.socialLinks = {
-            ...existingSocial,
-            ...payload.socialLinks,
-        };
-    }
-
-    const updated = await Footer.findByIdAndUpdate(
-        existingFooter._id,
+    // 7. Atomic Update using $set
+    // We use findOneAndUpdate to ensure we are updating the record we found
+    const updated = await Footer.findOneAndUpdate(
+        { _id: existingFooter._id },
         { $set: payload },
         { new: true, runValidators: true }
-    );
+    ).lean();
 
     return updated;
 };
