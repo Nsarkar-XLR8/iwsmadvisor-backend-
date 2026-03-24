@@ -44,35 +44,37 @@ const getFooter = catchAsync(async (req, res) => {
 });
 
 const updateFooter = catchAsync(async (req, res) => {
-    const {
-        description,
-        email,
-        phone,
-        copyright,
-        quickLinks,
-        consultingLinks,
-        contactLinks,
-        socialLinks,
-    } = req.body;
-
+    const body = req.body;
     const payload = {};
 
-    if (description !== undefined) payload.description = description;
-    if (email !== undefined) payload.email = email;
-    if (phone !== undefined) payload.phone = phone;
-    if (copyright !== undefined) payload.copyright = copyright;
+    // Scalar fields
+    ["description", "email", "phone", "copyright"].forEach(field => {
+        if (body[field] !== undefined) payload[field] = body[field];
+    });
 
-    // ✅ already parsed by validateRequest — no JSON.parse needed
-    if (quickLinks !== undefined) payload.quickLinks = quickLinks;
-    if (consultingLinks !== undefined) payload.consultingLinks = consultingLinks;
-    if (contactLinks !== undefined) payload.contactLinks = contactLinks;
-    if (socialLinks !== undefined) payload.socialLinks = socialLinks;
+    // Handle Complex Fields (Arrays/Objects) 
+    // IMPORTANT: When using form-data, these might come as strings.
+    const complexFields = ["quickLinks", "consultingLinks", "contactLinks", "socialLinks"];
+    complexFields.forEach(field => {
+        if (body[field] !== undefined) {
+            try {
+                // If it's a string (from form-data), parse it. If it's already an object, use it.
+                payload[field] = typeof body[field] === 'string'
+                    ? JSON.parse(body[field])
+                    : body[field];
+            } catch (e) {
+                payload[field] = body[field]; // Fallback
+            }
+        }
+    });
 
-    // ✅ Upload new logo only if provided
+    // Logo Upload
     const logoFile = req.files?.logo?.[0];
     if (logoFile) {
-        const cloudinaryResult = await cloudinaryUpload(logoFile.path, `footer-logo-${Date.now()}`, "footer");
-        payload.logo = cloudinaryResult.url;
+        const cloudinaryResult = await cloudinaryUpload(logoFile.path, `logo-${Date.now()}`, "footer");
+        if (cloudinaryResult?.url) {
+            payload.logo = cloudinaryResult.url;
+        }
     }
 
     const updated = await footerService.updateFooterIntoDb(payload);
