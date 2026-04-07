@@ -11,6 +11,17 @@ const featureItemSchema = Joi.object({
     description: Joi.string().trim().required().messages({ "any.required": "Feature description is required", "string.empty": "Feature description cannot be empty" }),
 });
 
+const featureItemUpdateSchema = Joi.object({
+    order: Joi.number().integer().min(1).required().messages({
+        "any.required": "Order is required",
+        "number.min": "Order must be at least 1",
+        "number.base": "Order must be a number",
+    }),
+    icon: Joi.string().optional().allow(""),
+    title: Joi.string().trim().optional().allow("").messages({ "string.empty": "Feature title cannot be empty" }),
+    description: Joi.string().trim().required().messages({ "any.required": "Feature description is required", "string.empty": "Feature description cannot be empty" }),
+});
+
 const createFeaturesSchema = Joi.object({
     order:    Joi.number().integer().min(1).required().messages({
         "any.required": "Order is required",
@@ -32,7 +43,7 @@ const updateFeaturesSchema = Joi.object({
     }),
     title:    Joi.string().trim().optional().messages({ "string.empty": "Title cannot be empty" }),
     subtitle: Joi.string().trim().optional().messages({ "string.empty": "Subtitle cannot be empty" }),
-    items:    Joi.array().items(featureItemSchema).min(1).optional().messages({
+    items:    Joi.array().items(featureItemUpdateSchema).min(1).optional().messages({
         "array.min": "At least one feature item is required",
     }),
 });
