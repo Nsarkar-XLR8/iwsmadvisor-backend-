@@ -1,6 +1,7 @@
 // src/modules/contact/contact.service.js
 import Contact from './contact.model.js';
 import ServicePage from '../servicePage/servicePage.model.js';
+import { ServicePageTitle } from '../CMS/servicePageTitle/servicePageTitle.model.js';
 import sendEmail from '../../lib/sendEmail.js';
 import { adminMail, emailTo } from '../../core/config/config.js';
 import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
@@ -44,8 +45,12 @@ const mapFilePayload = async (file) => {
 };
 
 const getServiceOptions = async () => {
-  const titles = await ServicePage.distinct('title', { title: { $exists: true, $ne: '' } });
-  return titles.map((t) => String(t).trim()).filter((t) => t.length > 0);
+  const pageTitles = await ServicePage.distinct('title', { title: { $exists: true, $ne: '' } });
+  const configTitles = await ServicePageTitle.distinct('title', { title: { $exists: true, $ne: '' } });
+  const allTitles = [...pageTitles, ...configTitles]
+    .map((t) => String(t).trim())
+    .filter((t) => t.length > 0);
+  return Array.from(new Set(allTitles));
 };
 
 const notifyAdmin = async (contact) => {
