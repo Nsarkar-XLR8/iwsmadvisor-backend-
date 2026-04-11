@@ -72,9 +72,18 @@ export const getUserProfileController = async (req, res) => {
 export const updateUserProfileController = async (req, res) => {
   try {
     const userId = req.user._id;
+
+    // Only admins can update their email
+    if (req.body.email && req.user.role !== "ADMIN") {
+      return generateResponse(res, 403, false, "Only admins can change their email", null);
+    }
+
     const updatedUser = await updateUser({ id: userId, ...req.body });
     generateResponse(res, 200, true, "User profile updated successfully", updatedUser);
   } catch (error) {
+    if (error.message === "Email already in use") {
+      return generateResponse(res, 409, false, error.message, null);
+    }
     generateResponse(res, 500, false, "Failed to update profile", null);
   }
 };
