@@ -45,8 +45,8 @@ app.use(mongoSanitize());
 app.use(morgan('combined'));
 
 // Set up body parsing middleware
-app.use(express.json({ limit: '10000kb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
 
 
