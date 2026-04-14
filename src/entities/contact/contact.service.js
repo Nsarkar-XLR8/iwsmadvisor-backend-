@@ -6,12 +6,17 @@ import sendEmail from '../../lib/sendEmail.js';
 import { adminMail, emailTo } from '../../core/config/config.js';
 import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 
-const isNonEmptyString = (val) => typeof val === 'string' && val.trim().length > 0;
+const isNonEmptyString = (val) =>
+  typeof val === 'string' && val.trim().length > 0;
 const trimIfString = (val) => (typeof val === 'string' ? val.trim() : val);
 
 const parsePagination = (page, limit) => {
-  const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
-  const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Math.min(Number(limit), 50) : 10;
+  const safePage =
+    Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+  const safeLimit =
+    Number.isFinite(Number(limit)) && Number(limit) > 0
+      ? Math.min(Number(limit), 50)
+      : 10;
   return { page: safePage, limit: safeLimit };
 };
 
@@ -36,7 +41,7 @@ const mapFilePayload = async (file) => {
       originalName: source.originalname || source.originalName,
       mimeType: source.mimetype || source.mimeType,
       size: source.size,
-      url: uploaded.secure_url,
+      url: uploaded.secure_url
     };
   } catch (err) {
     console.error('Contact file upload failed:', err);
@@ -45,8 +50,12 @@ const mapFilePayload = async (file) => {
 };
 
 const getServiceOptions = async () => {
-  const pageTitles = await ServicePage.distinct('title', { title: { $exists: true, $ne: '' } });
-  const configTitles = await ServicePageTitle.distinct('title', { title: { $exists: true, $ne: '' } });
+  const pageTitles = await ServicePage.distinct('title', {
+    title: { $exists: true, $ne: '' }
+  });
+  const configTitles = await ServicePageTitle.distinct('title', {
+    title: { $exists: true, $ne: '' }
+  });
   const allTitles = [...pageTitles, ...configTitles]
     .map((t) => String(t).trim())
     .filter((t) => t.length > 0);
@@ -74,7 +83,7 @@ const notifyAdmin = async (contact) => {
     if (contact.file?.url) {
       attachments.push({
         filename: contact.file.originalName || contact.file.filename || 'file',
-        path: contact.file.url,
+        path: contact.file.url
       });
     }
     await sendEmail({ to, subject, html, attachments });
@@ -90,7 +99,7 @@ export const createContactService = async ({
   phone,
   service,
   message,
-  file,
+  file
 }) => {
   if (
     !isNonEmptyString(firstName) ||
@@ -99,7 +108,9 @@ export const createContactService = async ({
     !isNonEmptyString(message) ||
     !isNonEmptyString(service)
   ) {
-    const err = new Error('First name, last name, email, service, and message are required');
+    const err = new Error(
+      'First name, last name, email, service, and message are required'
+    );
     err.code = 'VALIDATION_ERROR';
     throw err;
   }
@@ -121,10 +132,12 @@ export const createContactService = async ({
     phone: isNonEmptyString(phone) ? phone.trim() : '',
     service: normalizedService,
     message: message.trim(),
-    ...(filePayload ? { file: filePayload } : {}),
+    ...(filePayload ? { file: filePayload } : {})
   });
 
-  notifyAdmin(created).catch((err) => console.error('Async admin notify error:', err));
+  notifyAdmin(created).catch((err) =>
+    console.error('Async admin notify error:', err)
+  );
 
   return created;
 };
@@ -141,7 +154,7 @@ export const getContactsService = async ({ page = 1, limit = 10, search }) => {
       { email: { $regex: safeSearch, $options: 'i' } },
       { phone: { $regex: safeSearch, $options: 'i' } },
       { message: { $regex: safeSearch, $options: 'i' } },
-      { service: { $regex: safeSearch, $options: 'i' } },
+      { service: { $regex: safeSearch, $options: 'i' } }
     ];
   }
 
@@ -150,7 +163,7 @@ export const getContactsService = async ({ page = 1, limit = 10, search }) => {
     Contact.find(filter)
       .sort({ createdAt: -1 })
       .skip((safePage - 1) * safeLimit)
-      .limit(safeLimit),
+      .limit(safeLimit)
   ]);
 
   return {
@@ -159,8 +172,8 @@ export const getContactsService = async ({ page = 1, limit = 10, search }) => {
       page: safePage,
       limit: safeLimit,
       total,
-      totalPages: Math.ceil(total / safeLimit) || 1,
-    },
+      totalPages: Math.ceil(total / safeLimit) || 1
+    }
   };
 };
 
@@ -169,12 +182,23 @@ export const getContactByIdService = async (id) => {
 };
 
 export const updateContactService = async (id, data) => {
-  const allowed = ['firstName', 'lastName', 'email', 'phone', 'service', 'message', 'file'];
+  const allowed = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'service',
+    'message',
+    'file'
+  ];
   const updates = {};
 
   for (const field of allowed) {
     if (data[field] !== undefined) {
-      if (['firstName', 'lastName', 'email', 'message'].includes(field) && !isNonEmptyString(data[field])) {
+      if (
+        ['firstName', 'lastName', 'email', 'message'].includes(field) &&
+        !isNonEmptyString(data[field])
+      ) {
         const err = new Error(`${field} cannot be empty`);
         err.code = 'VALIDATION_ERROR';
         throw err;
@@ -183,7 +207,10 @@ export const updateContactService = async (id, data) => {
       if (field === 'service') {
         const normalizedService = String(data[field]).trim();
         const validServices = await getServiceOptions();
-        if (validServices.length > 0 && !validServices.includes(normalizedService)) {
+        if (
+          validServices.length > 0 &&
+          !validServices.includes(normalizedService)
+        ) {
           const err = new Error('Service selection is invalid');
           err.code = 'VALIDATION_ERROR';
           throw err;
@@ -204,7 +231,11 @@ export const updateContactService = async (id, data) => {
     }
   }
 
-  const updated = await Contact.findByIdAndUpdate(id, { $set: updates }, { new: true });
+  const updated = await Contact.findByIdAndUpdate(
+    id,
+    { $set: updates },
+    { new: true }
+  );
   if (!updated) return { notFound: true };
   return { contact: updated };
 };
