@@ -1,29 +1,69 @@
 // src/modules/contact/contact.controller.js
 import mongoose from 'mongoose';
+import sendEmail from '../../lib/sendEmail.js';
 import {
   createContactService,
   getContactsService,
   getContactByIdService,
   updateContactService,
-  deleteContactService,
+  deleteContactService
 } from './contact.service.js';
+
+const CAREERS_EMAIL = 'careers@iwmsadvisors.com';
 
 // Public: create contact message (multipart/form-data)
 export const createContact = async (req, res) => {
   try {
     const contactFile = req.files?.file?.[0];
-    const contact = await createContactService({ ...req.body, file: contactFile });
+    const contact = await createContactService({
+      ...req.body,
+      file: contactFile
+    });
+
+    const subject = `New Contact Message from ${contact.firstName} ${contact.lastName}`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+        <h2>New Contact Submission</h2>
+        <p><strong>Name:</strong> ${contact.firstName} ${contact.lastName}</p>
+        <p><strong>Email:</strong> ${contact.email}</p>
+        <p><strong>Phone:</strong> ${contact.phone || 'N/A'}</p>
+        <p><strong>Service:</strong> ${contact.service}</p>
+        <p><strong>Message:</strong><br/>${contact.message}</p>
+      </div>
+    `;
+
+    const attachments = [];
+    if (contact?.file?.url) {
+      attachments.push({
+        filename: contact.file.originalName || contact.file.filename || 'file',
+        path: contact.file.url
+      });
+    }
+
+    const mailResult = await sendEmail({
+      to: CAREERS_EMAIL,
+      subject,
+      html,
+      attachments
+    });
+
+    if (!mailResult?.success) {
+      console.error('Careers email send failed:', mailResult?.error);
+    }
+
     return res.status(201).json({
       success: true,
       message: 'Message sent successfully',
-      data: contact,
+      data: contact
     });
   } catch (error) {
     if (error.code === 'VALIDATION_ERROR') {
       return res.status(400).json({ success: false, message: error.message });
     }
     console.error('Create contact error:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
   }
 };
 
@@ -37,11 +77,13 @@ export const getContacts = async (req, res) => {
       success: true,
       message: 'Contacts fetched successfully',
       data: result.data,
-      pagination: result.pagination,
+      pagination: result.pagination
     });
   } catch (error) {
     console.error('Get contacts error:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
   }
 };
 
@@ -50,22 +92,28 @@ export const getContactById = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid contact id' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid contact id' });
     }
 
     const contact = await getContactByIdService(id);
     if (!contact) {
-      return res.status(404).json({ success: false, message: 'Contact not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Contact not found' });
     }
 
     return res.status(200).json({
       success: true,
       message: 'Contact fetched successfully',
-      data: contact,
+      data: contact
     });
   } catch (error) {
     console.error('Get contact error:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
   }
 };
 
@@ -74,30 +122,36 @@ export const updateContact = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid contact id' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid contact id' });
     }
 
     const contactFile = req.files?.file?.[0];
     const result = await updateContactService(id, {
       ...req.body,
-      ...(contactFile ? { file: contactFile } : {}),
+      ...(contactFile ? { file: contactFile } : {})
     });
 
     if (result?.notFound) {
-      return res.status(404).json({ success: false, message: 'Contact not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Contact not found' });
     }
 
     return res.status(200).json({
       success: true,
       message: 'Contact updated successfully',
-      data: result.contact,
+      data: result.contact
     });
   } catch (error) {
     if (error.code === 'VALIDATION_ERROR') {
       return res.status(400).json({ success: false, message: error.message });
     }
     console.error('Update contact error:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
   }
 };
 
@@ -106,17 +160,25 @@ export const deleteContact = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid contact id' });
+      return res
+        .status(400)
+        .json({ success: false, message: 'Invalid contact id' });
     }
 
     const result = await deleteContactService(id);
     if (result?.notFound) {
-      return res.status(404).json({ success: false, message: 'Contact not found' });
+      return res
+        .status(404)
+        .json({ success: false, message: 'Contact not found' });
     }
 
-    return res.status(200).json({ success: true, message: 'Contact deleted successfully' });
+    return res
+      .status(200)
+      .json({ success: true, message: 'Contact deleted successfully' });
   } catch (error) {
     console.error('Delete contact error:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Internal server error' });
   }
 };
