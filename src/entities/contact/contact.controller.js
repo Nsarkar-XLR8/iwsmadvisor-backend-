@@ -9,7 +9,7 @@ import {
   deleteContactService
 } from './contact.service.js';
 
-const CAREERS_EMAIL = 'careers@iwmsadvisors.com';
+const CAREERS_EMAIL = 'info@iwmsadvisors.com';
 
 // Public: create contact message (multipart/form-data)
 export const createContact = async (req, res) => {
