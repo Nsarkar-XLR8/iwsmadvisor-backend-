@@ -34,6 +34,13 @@ export const applyToCareer = async (req, res) => {
       resumeFile
     });
 
+    const resumeUrl = application.resumeFile?.url || application.resumeLink;
+    const resumeLabel =
+      application.resumeFile?.originalName ||
+      application.resumeFile?.filename ||
+      'Resume file';
+    const dashboardUrl = 'https://admin.iwmsadvisors.com/career-management';
+
     // Send email notification to careers team
     const emailContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; background-color: #f9f9f9;">
@@ -46,10 +53,11 @@ export const applyToCareer = async (req, res) => {
         <p><strong>Phone:</strong> ${application.phone || 'N/A'}</p>
         <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 20px;">Application Details</h3>
-        <p><strong>Resume:</strong> ${application.resumeFile?.originalName || 'Uploaded'}</p>
+        <p><strong>Resume:</strong> ${resumeUrl ? `<a href="${resumeUrl}" target="_blank" rel="noopener noreferrer">${resumeLabel}</a>` : 'N/A'}</p>
         <p><strong>Portfolio:</strong> ${application.portfolioLink || 'N/A'}</p>
         <p><strong>Cover Letter:</strong> ${application.coverLetter || 'N/A'}</p>
         <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
+        <p><strong>Dashboard:</strong> <a href="${dashboardUrl}" target="_blank" rel="noopener noreferrer">Open career management dashboard</a></p>
         <p style="font-size: 12px; color: #aaa; text-align: center;">This is an automated notification. Please review the application in the admin panel.</p>
       </div>
     `;
