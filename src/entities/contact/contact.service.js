@@ -2,8 +2,6 @@
 import Contact from './contact.model.js';
 import ServicePage from '../servicePage/servicePage.model.js';
 import { ServicePageTitle } from '../CMS/servicePageTitle/servicePageTitle.model.js';
-import sendEmail from '../../lib/sendEmail.js';
-import { adminMail, emailTo } from '../../core/config/config.js';
 import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 
 const isNonEmptyString = (val) =>
@@ -62,36 +60,6 @@ const getServiceOptions = async () => {
   return Array.from(new Set(allTitles));
 };
 
-const notifyAdmin = async (contact) => {
-  const to = adminMail || emailTo;
-  if (!to) return;
-
-  const subject = `New Contact Message from ${contact.firstName} ${contact.lastName}`;
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-      <h2>New Contact Submission</h2>
-      <p><strong>Name:</strong> ${contact.firstName} ${contact.lastName}</p>
-      <p><strong>Email:</strong> ${contact.email}</p>
-      <p><strong>Phone:</strong> ${contact.phone || 'N/A'}</p>
-      <p><strong>Service:</strong> ${contact.service}</p>
-      <p><strong>Message:</strong><br/>${contact.message}</p>
-    </div>
-  `;
-
-  try {
-    const attachments = [];
-    if (contact.file?.url) {
-      attachments.push({
-        filename: contact.file.originalName || contact.file.filename || 'file',
-        path: contact.file.url
-      });
-    }
-    await sendEmail({ to, subject, html, attachments });
-  } catch (err) {
-    console.error('Admin notification email failed:', err);
-  }
-};
-
 export const createContactService = async ({
   firstName,
   lastName,
@@ -134,10 +102,6 @@ export const createContactService = async ({
     message: message.trim(),
     ...(filePayload ? { file: filePayload } : {})
   });
-
-  notifyAdmin(created).catch((err) =>
-    console.error('Async admin notify error:', err)
-  );
 
   return created;
 };

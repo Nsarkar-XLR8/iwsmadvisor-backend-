@@ -9,7 +9,7 @@ import {
   deleteContactService
 } from './contact.service.js';
 
-const CAREERS_EMAIL = 'info@iwmsadvisors.com';
+const CONTACT_EMAIL = 'info@iwmsadvisors.com';
 
 // Public: create contact message (multipart/form-data)
 export const createContact = async (req, res) => {
@@ -41,7 +41,7 @@ export const createContact = async (req, res) => {
     }
 
     const mailResult = await sendEmail({
-      to: CAREERS_EMAIL,
+      to: CONTACT_EMAIL,
       subject,
       html,
       attachments
