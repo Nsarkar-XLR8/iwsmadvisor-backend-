@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import sendEmail from '../../lib/sendEmail.js';
+import Career from '../career/career.model.js';
+import { publicCareersBaseUrl } from '../../core/config/config.js';
 import {
   createCareerApplicationService,
   getCareerApplicationsService,
@@ -15,6 +17,17 @@ const firstAvailableFile = (files) => {
     if (files[key]?.[0]) return files[key][0];
   }
   return undefined;
+};
+
+const toCareerSlug = (value) => {
+  if (!value) return '';
+  return value
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9\s-]/g, '')
+    .replaceAll(/\s+/g, '-')
+    .replaceAll(/-+/g, '-');
 };
 
 // Public: apply to a career
@@ -33,13 +46,21 @@ export const applyToCareer = async (req, res) => {
       // userId: req.user?._id,
       resumeFile
     });
+    const career = await Career.findById(careerId).select('title');
 
     const resumeUrl = application.resumeFile?.url || application.resumeLink;
     const resumeLabel =
       application.resumeFile?.originalName ||
       application.resumeFile?.filename ||
       'Resume file';
-    const dashboardUrl = 'https://admin.iwmsadvisors.com/career-management';
+    const jobTitle = career?.title || 'N/A';
+    const jobTitleSlug = toCareerSlug(career?.title);
+    const jobPostUrl = jobTitleSlug
+      ? `${publicCareersBaseUrl}/${jobTitleSlug}`
+      : publicCareersBaseUrl;
+    const dashboardUrl =
+      process.env.CAREER_MANAGEMENT_DASHBOARD_URL ||
+      'https://admin.iwmsadvisors.com/career-management';
 
     // Send email notification to careers team
     const emailContent = `
@@ -53,6 +74,8 @@ export const applyToCareer = async (req, res) => {
         <p><strong>Phone:</strong> ${application.phone || 'N/A'}</p>
         <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
         <h3 style="color: #333; margin-top: 20px;">Application Details</h3>
+        <p><strong>Job Position:</strong> ${jobTitle}</p>
+        <p><strong>Job Post URL:</strong> <a href="${jobPostUrl}" target="_blank" rel="noopener noreferrer">${jobPostUrl}</a></p>
         <p><strong>Resume:</strong> ${resumeUrl ? `<a href="${resumeUrl}" target="_blank" rel="noopener noreferrer">${resumeLabel}</a>` : 'N/A'}</p>
         <p><strong>Portfolio:</strong> ${application.portfolioLink || 'N/A'}</p>
         <p><strong>Cover Letter:</strong> ${application.coverLetter || 'N/A'}</p>
