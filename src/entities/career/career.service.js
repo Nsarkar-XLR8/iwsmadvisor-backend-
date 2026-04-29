@@ -4,11 +4,46 @@ const isNonEmptyString = (val) =>
   typeof val === 'string' && val.trim().length > 0;
 const normalizeCareerType = (val) =>
   isNonEmptyString(val) ? val.trim().toLowerCase() : '';
+const CAREER_TYPE_ALIASES = new Map([
+  ['full-time', 'full time'],
+  ['fulltime', 'full time'],
+  ['part time', 'part-time'],
+  ['parttime', 'part-time']
+]);
+
+const parseCareerTypeInput = (value) => {
+  if (Array.isArray(value)) return value;
+
+  if (typeof value !== 'string') return [value];
+
+  const trimmedValue = value.trim();
+
+  if (trimmedValue.startsWith('[') && trimmedValue.endsWith(']')) {
+    try {
+      const parsed = JSON.parse(trimmedValue);
+      return Array.isArray(parsed) ? parsed : [parsed];
+    } catch {
+      return [value];
+    }
+  }
+
+  if (trimmedValue.includes(',')) {
+    return trimmedValue.split(',').map((item) => item.trim());
+  }
+
+  return [value];
+};
+
+const canonicalizeCareerType = (value) => {
+  const normalizedValue = normalizeCareerType(value);
+  return CAREER_TYPE_ALIASES.get(normalizedValue) || normalizedValue;
+};
+
 const normalizeCareerTypeList = (value, { strict = false } = {}) => {
-  const items = Array.isArray(value) ? value : [value];
+  const items = parseCareerTypeInput(value);
   const normalizedItems = items
     .filter(isNonEmptyString)
-    .map((item) => normalizeCareerType(item));
+    .map((item) => canonicalizeCareerType(item));
 
   if (strict) {
     const invalidItems = normalizedItems.filter(
@@ -160,10 +195,7 @@ export const getCareersService = async ({
   }
 
   if (isNonEmptyString(type)) {
-    const normalizedTypes = normalizeCareerTypeList(
-      type.includes(',') ? type.split(',') : type,
-      { strict: true }
-    );
+    const normalizedTypes = normalizeCareerTypeList(type, { strict: true });
     if (normalizedTypes.length > 0) {
       filter.type = { $in: normalizedTypes };
     }
