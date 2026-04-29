@@ -9,10 +9,18 @@ const CareerSchema = new mongoose.Schema(
     department: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
     type: {
-      type: String,
-      enum: CAREER_TYPE_OPTIONS,
+      type: [
+        {
+          type: String,
+          enum: CAREER_TYPE_OPTIONS,
+          trim: true
+        }
+      ],
       required: true,
-      trim: true
+      validate: {
+        validator: (values) => Array.isArray(values) && values.length > 0,
+        message: 'At least one career type is required'
+      }
     },
     description: { type: String, trim: true },
     requirements: { type: String, trim: true },
