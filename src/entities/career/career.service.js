@@ -35,7 +35,9 @@ const parseCareerTypeInput = (value) => {
 };
 
 const canonicalizeCareerType = (value) => {
-  const normalizedValue = normalizeCareerType(value);
+  let normalizedValue = normalizeCareerType(value);
+  // Remove "multiple" suffix if present (case-insensitive, e.g. "full time multiple" -> "full time")
+  normalizedValue = normalizedValue.replace(/\s*multiple\s*$/i, '');
   return CAREER_TYPE_ALIASES.get(normalizedValue) || normalizedValue;
 };
 
