@@ -4,6 +4,28 @@ const isNonEmptyString = (val) =>
   typeof val === 'string' && val.trim().length > 0;
 const normalizeCareerType = (val) =>
   isNonEmptyString(val) ? val.trim().toLowerCase() : '';
+const normalizeCareerTypeList = (value, { strict = false } = {}) => {
+  const items = Array.isArray(value) ? value : [value];
+  const normalizedItems = items
+    .filter(isNonEmptyString)
+    .map((item) => normalizeCareerType(item));
+
+  if (strict) {
+    const invalidItems = normalizedItems.filter(
+      (item) => !CAREER_TYPE_OPTIONS.includes(item)
+    );
+
+    if (invalidItems.length > 0) {
+      const err = new Error(
+        `Type must be one of: ${CAREER_TYPE_OPTIONS.join(', ')}`
+      );
+      err.code = 'VALIDATION_ERROR';
+      throw err;
+    }
+  }
+
+  return normalizedItems.filter((item) => CAREER_TYPE_OPTIONS.includes(item));
+};
 
 const parseBooleanInput = (value, fieldName) => {
   if (typeof value === 'boolean') return value;
@@ -38,15 +60,15 @@ const textFields = new Set(['description', 'requirements', 'responsibilities']);
 const booleanFields = new Set(['isActive', 'multiplePosition']);
 
 const validateCareerType = (value) => {
-  const normalizedType = normalizeCareerType(value);
-  if (!CAREER_TYPE_OPTIONS.includes(normalizedType)) {
+  const normalizedTypes = normalizeCareerTypeList(value, { strict: true });
+  if (normalizedTypes.length === 0) {
     const err = new Error(
       `Type must be one of: ${CAREER_TYPE_OPTIONS.join(', ')}`
     );
     err.code = 'VALIDATION_ERROR';
     throw err;
   }
-  return normalizedType;
+  return normalizedTypes;
 };
 
 const buildCareerUpdateValue = (field, value) => {
@@ -138,9 +160,12 @@ export const getCareersService = async ({
   }
 
   if (isNonEmptyString(type)) {
-    const normalizedType = normalizeCareerType(type);
-    if (CAREER_TYPE_OPTIONS.includes(normalizedType)) {
-      filter.type = normalizedType;
+    const normalizedTypes = normalizeCareerTypeList(
+      type.includes(',') ? type.split(',') : type,
+      { strict: true }
+    );
+    if (normalizedTypes.length > 0) {
+      filter.type = { $in: normalizedTypes };
     }
   }
 
