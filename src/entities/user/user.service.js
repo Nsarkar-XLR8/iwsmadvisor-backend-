@@ -66,6 +66,14 @@ export const getUserById = async (userId) => {
 
 // Update user
 export const updateUser = async ({ id, ...updateData }) => {
+  // If email is being updated, check for duplicates
+  if (updateData.email) {
+    const existingUser = await User.findOne({ email: updateData.email, _id: { $ne: id } });
+    if (existingUser) {
+      throw new Error('Email already in use');
+    }
+  }
+
   const updatedUser = await User.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
