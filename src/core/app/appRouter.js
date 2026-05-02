@@ -34,6 +34,7 @@ import { servicePageTitleRoutes } from '../../entities/CMS/servicePageTitle/serv
 import { insightRoutes } from '../../entities/CMS/insight/insight.routes.js';
 import { careerTitleRoutes } from '../../entities/CMS/careerTitle/careerTitle.routes.js';
 import { serviceTitleRoutes } from '../../entities/CMS/serviceTitle/serviceTitle.routes.js';
+import { subscriberTitleRoutes } from '../../entities/CMS/subscriberTitle/subscriberTitle.routes.js';
 const router = express.Router();
 
 
@@ -72,5 +73,6 @@ router.use('/v1/service-page-title', servicePageTitleRoutes);
 router.use('/v1/insight', insightRoutes);
 router.use('/v1/career', careerTitleRoutes);
 router.use('/v1/service', serviceTitleRoutes);
+router.use('/v1/subscriber', subscriberTitleRoutes);
 
 export default router;
