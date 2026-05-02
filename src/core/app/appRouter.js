@@ -71,7 +71,7 @@ router.use('/v1/navbar', navbarRoutes);
 router.use('/v1/logo', logoRoutes);
 router.use('/v1/service-page-title', servicePageTitleRoutes);
 router.use('/v1/insight', insightRoutes);
-router.use('/v1/career', careerTitleRoutes);
+router.use('/v1/career-title', careerTitleRoutes);
 router.use('/v1/service', serviceTitleRoutes);
 router.use('/v1/subscriber', subscriberTitleRoutes);
 
