@@ -3,6 +3,32 @@ import catchAsync from "../../../lib/catchAsync.js";
 import { generateResponse } from "../../../lib/responseFormate.js";
 import { cloudinaryUpload } from "../../../lib/cloudinaryUpload.js";
 
+const parseLinkArray = (value) => {
+    if (value === undefined || value === null) return undefined;
+    let parsed = value;
+
+    if (typeof value === "string") {
+        if (value.trim() === "") return undefined;
+        try {
+            parsed = JSON.parse(value);
+        } catch (error) {
+            return undefined;
+        }
+    }
+
+    if (!Array.isArray(parsed)) return undefined;
+
+    const normalized = parsed
+        .filter(item => item && typeof item === "object")
+        .map(item => ({
+            label: typeof item.label === "string" ? item.label.trim() : item.label,
+            url: typeof item.url === "string" ? item.url.trim() : item.url,
+        }))
+        .filter(item => item.label && item.url);
+
+    return normalized.length ? normalized : [];
+};
+
 const createFooter = catchAsync(async (req, res) => {
     const logoFile = req.files?.logo?.[0];
     if (!logoFile) {
@@ -57,13 +83,19 @@ const updateFooter = catchAsync(async (req, res) => {
     const complexFields = ["quickLinks", "consultingLinks", "contactLinks", "socialLinks"];
     complexFields.forEach(field => {
         if (body[field] !== undefined) {
-            try {
-                // If it's a string (from form-data), parse it. If it's already an object, use it.
-                payload[field] = typeof body[field] === 'string'
-                    ? JSON.parse(body[field])
-                    : body[field];
-            } catch (e) {
-                payload[field] = body[field]; // Fallback
+            if (["quickLinks", "consultingLinks", "contactLinks"].includes(field)) {
+                const normalizedLinks = parseLinkArray(body[field]);
+                if (normalizedLinks !== undefined) {
+                    payload[field] = normalizedLinks;
+                }
+            } else {
+                try {
+                    payload[field] = typeof body[field] === 'string'
+                        ? JSON.parse(body[field])
+                        : body[field];
+                } catch (e) {
+                    payload[field] = body[field]; // Fallback
+                }
             }
         }
     });

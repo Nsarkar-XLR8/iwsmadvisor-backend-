@@ -2,6 +2,18 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import { cloudinaryApiKey, cloudinaryCloudName, cloudinarySecret } from "../core/config/config.js";
 
+if (!cloudinaryCloudName || !cloudinaryApiKey || !cloudinarySecret) {
+  throw new Error(
+    "Cloudinary environment variables are required: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET"
+  );
+}
+
+cloudinary.config({
+  cloud_name: cloudinaryCloudName,
+  api_key: cloudinaryApiKey,
+  api_secret: cloudinarySecret,
+});
+
 // ✅ Helper — safely delete temp file without crashing
 const deleteTempFile = (filePath) => {
   try {
@@ -14,12 +26,6 @@ const deleteTempFile = (filePath) => {
 };
 
 export const cloudinaryUpload = async (filePath, public_id, folder) => {
-  cloudinary.config({
-    cloud_name: cloudinaryCloudName,
-    api_key: cloudinaryApiKey,
-    api_secret: cloudinarySecret,
-  });
-
   try {
     const extension = filePath.split(".").pop().toLowerCase();
     const isDocument = ["pdf", "docx", "doc", "xlsx", "xls", "ppt", "pptx"].includes(extension);
