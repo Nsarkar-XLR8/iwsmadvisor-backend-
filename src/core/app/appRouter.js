@@ -31,7 +31,7 @@ import { numberRoutes } from '../../entities/CMS/number/number.routes.js';
 import { navbarRoutes } from '../../entities/CMS/navbar/navbar.routes.js';
 import { logoRoutes } from '../../entities/CMS/logo/logo.routes.js';
 import { servicePageTitleRoutes } from '../../entities/CMS/servicePageTitle/servicePageTitle.routes.js';
-
+import { insightRoutes } from '../../entities/CMS/insight/insight.routes.js';
 const router = express.Router();
 
 
@@ -67,6 +67,6 @@ router.use('/v1/number', numberRoutes);
 router.use('/v1/navbar', navbarRoutes);
 router.use('/v1/logo', logoRoutes);
 router.use('/v1/service-page-title', servicePageTitleRoutes);
-
+router.use('/v1/insight', insightRoutes);
 
 export default router;
