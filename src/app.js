@@ -48,6 +48,12 @@ app.use(morgan('combined'));
 app.use(xssClean());
 app.use(mongoSanitize());
 
+// Set up logging middleware
+app.use(morgan('combined'));
+
+app.use(xssClean());
+app.use(mongoSanitize());
+
 
 
 
