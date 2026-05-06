@@ -1,21 +1,9 @@
 import { careerTitleService } from "./careerTitle.service.js";
-import { validationResult } from "express-validator";
 import catchAsync from "../../../lib/catchAsync.js";
 import { generateResponse } from "../../../lib/responseFormate.js";
 
-const handleValidationErrors = (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        generateResponse(res, 422, false, "Validation failed", {
-            errors: errors.array().map(({ path, msg }) => ({ field: path, message: msg })),
-        });
-        return true;
-    }
-    return false;
-};
 
 const createCareerTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
 
@@ -32,14 +20,12 @@ const getAllCareerTitles = catchAsync(async (req, res) => {
 });
 
 const getCareerTitleById = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const careerTitle = await careerTitleService.getCareerTitleByIdFromDb(req.params.careerTitleId);
     return generateResponse(res, 200, true, "Career Title fetched successfully", careerTitle);
 });
 
 const updateCareerTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
     const payload = {};
@@ -56,7 +42,6 @@ const updateCareerTitle = catchAsync(async (req, res) => {
 });
 
 const deleteCareerTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     await careerTitleService.deleteCareerTitleFromDb(req.params.careerTitleId);
     return generateResponse(res, 200, true, "Career Title deleted successfully", null);
