@@ -26,10 +26,10 @@ const createTransform = catchAsync(async (req, res) => {
     if (!allowedMimeTypes.includes(image3File.mimetype)) return generateResponse(res, 400, false, "Image 3 must be a valid image (JPEG, PNG, WEBP, GIF)", null);
 
     // ✅ Validate file sizes — max 5MB each
-    const maxSize = 5 * 1024 * 1024;
-    if (image1File.size > maxSize) return generateResponse(res, 400, false, "Image 1 must not exceed 5MB", null);
-    if (image2File.size > maxSize) return generateResponse(res, 400, false, "Image 2 must not exceed 5MB", null);
-    if (image3File.size > maxSize) return generateResponse(res, 400, false, "Image 3 must not exceed 5MB", null);
+    const maxSize = 50 * 1024 * 1024;
+    if (image1File.size > maxSize) return generateResponse(res, 400, false, "Image 1 must not exceed 50MB", null);
+    if (image2File.size > maxSize) return generateResponse(res, 400, false, "Image 2 must not exceed 50MB", null);
+    if (image3File.size > maxSize) return generateResponse(res, 400, false, "Image 3 must not exceed 50MB", null);
 
     // ✅ Upload all 3 images in parallel
     const [result1, result2, result3] = await Promise.all([
@@ -84,20 +84,20 @@ const updateTransform = catchAsync(async (req, res) => {
     const image3File = req.files?.image3?.[0];
 
     const allowedMimeTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-    const maxSize = 5 * 1024 * 1024;
+    const maxSize = 50 * 1024 * 1024;
 
     // ✅ Validate each image if provided
     if (image1File) {
         if (!allowedMimeTypes.includes(image1File.mimetype)) return generateResponse(res, 400, false, "Image 1 must be a valid image (JPEG, PNG, WEBP, GIF)", null);
-        if (image1File.size > maxSize) return generateResponse(res, 400, false, "Image 1 must not exceed 5MB", null);
+        if (image1File.size > maxSize) return generateResponse(res, 400, false, "Image 1 must not exceed 50MB", null);
     }
     if (image2File) {
         if (!allowedMimeTypes.includes(image2File.mimetype)) return generateResponse(res, 400, false, "Image 2 must be a valid image (JPEG, PNG, WEBP, GIF)", null);
-        if (image2File.size > maxSize) return generateResponse(res, 400, false, "Image 2 must not exceed 5MB", null);
+        if (image2File.size > maxSize) return generateResponse(res, 400, false, "Image 2 must not exceed 50MB", null);
     }
     if (image3File) {
         if (!allowedMimeTypes.includes(image3File.mimetype)) return generateResponse(res, 400, false, "Image 3 must be a valid image (JPEG, PNG, WEBP, GIF)", null);
-        if (image3File.size > maxSize) return generateResponse(res, 400, false, "Image 3 must not exceed 5MB", null);
+        if (image3File.size > maxSize) return generateResponse(res, 400, false, "Image 3 must not exceed 50MB", null);
     }
 
     // ✅ Upload only provided images in parallel
