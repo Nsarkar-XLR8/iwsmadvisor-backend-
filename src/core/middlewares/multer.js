@@ -34,10 +34,15 @@ const storage = multer.diskStorage({
     },
 });
 
-// Create the base multer instance
+// Create the base multer instance with comprehensive limits
 const upload = multer({
     storage,
-    limits: { fileSize: 100 * 1024 * 1024 }, // 100 MB
+    limits: { 
+        fileSize: 100 * 1024 * 1024, // 100 MB per file
+        fieldSize: 100 * 1024 * 1024, // 100 MB for non-file fields (descriptions, etc.)
+        fields: 50, // Allow up to 50 non-file fields
+        parts: 100, // Allow up to 100 total parts (files + fields)
+    },
 });
 
 // Custom fields upload function
