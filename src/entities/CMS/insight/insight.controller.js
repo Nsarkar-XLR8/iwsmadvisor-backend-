@@ -1,22 +1,9 @@
 import { insightService } from "./insight.service.js";
-import { validationResult } from "express-validator";
 import catchAsync from "../../../lib/catchAsync.js";
 import { generateResponse } from "../../../lib/responseFormate.js";
 
-// Handle express-validator errors
-const handleValidationErrors = (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        generateResponse(res, 422, false, "Validation failed", {
-            errors: errors.array().map(({ path, msg }) => ({ field: path, message: msg })),
-        });
-        return true;
-    }
-    return false;
-};
 
 const createInsight = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
 
@@ -33,14 +20,12 @@ const getAllInsights = catchAsync(async (req, res) => {
 });
 
 const getInsightById = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const insight = await insightService.getInsightByIdFromDb(req.params.insightId);
     return generateResponse(res, 200, true, "Insight fetched successfully", insight);
 });
 
 const updateInsight = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
     const payload = {};
@@ -57,7 +42,6 @@ const updateInsight = catchAsync(async (req, res) => {
 });
 
 const deleteInsight = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     await insightService.deleteInsightFromDb(req.params.insightId);
     return generateResponse(res, 200, true, "Insight deleted successfully", null);
