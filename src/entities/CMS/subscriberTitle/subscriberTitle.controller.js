@@ -1,21 +1,9 @@
 import { subscriberTitleService } from "./subscriberTitle.service.js";
-import { validationResult } from "express-validator";
 import catchAsync from "../../../lib/catchAsync.js";
 import { generateResponse } from "../../../lib/responseFormate.js";
 
-const handleValidationErrors = (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        generateResponse(res, 422, false, "Validation failed", {
-            errors: errors.array().map(({ path, msg }) => ({ field: path, message: msg })),
-        });
-        return true;
-    }
-    return false;
-};
 
 const createSubscriberTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
 
@@ -32,14 +20,12 @@ const getAllSubscriberTitles = catchAsync(async (req, res) => {
 });
 
 const getSubscriberTitleById = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const subscriberTitle = await subscriberTitleService.getSubscriberTitleByIdFromDb(req.params.subscriberTitleId);
     return generateResponse(res, 200, true, "Subscriber Title fetched successfully", subscriberTitle);
 });
 
 const updateSubscriberTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
     const payload = {};
@@ -56,7 +42,6 @@ const updateSubscriberTitle = catchAsync(async (req, res) => {
 });
 
 const deleteSubscriberTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     await subscriberTitleService.deleteSubscriberTitleFromDb(req.params.subscriberTitleId);
     return generateResponse(res, 200, true, "Subscriber Title deleted successfully", null);
