@@ -1,20 +1,8 @@
 import { bannerService } from "./banner.service.js";
-import { validationResult } from "express-validator";
 import catchAsync from "../../../lib/catchAsync.js";
 import { generateResponse } from "../../../lib/responseFormate.js";
 import { cloudinaryUpload } from "../../../lib/cloudinaryUpload.js";
 
-// ✅ Handle express-validator errors
-const handleValidationErrors = (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        generateResponse(res, 422, false, "Validation failed", {
-            errors: errors.array().map(({ path, msg }) => ({ field: path, message: msg })),
-        });
-        return true;
-    }
-    return false;
-};
 
 
 const createBanner = catchAsync(async (req, res) => {
@@ -48,7 +36,6 @@ const getAllBanners = catchAsync(async (req, res) => {
 });
 
 const getBannerById = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const banner = await bannerService.getBannerByIdFromDb(req.params.bannerId);
     return generateResponse(res, 200, true, "Banner fetched successfully", banner);
@@ -89,7 +76,6 @@ const updateBanner = catchAsync(async (req, res) => {
 
 
 const deleteBanner = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     await bannerService.deleteBannerFromDb(req.params.bannerId);
     return generateResponse(res, 200, true, "Banner deleted successfully", null);
