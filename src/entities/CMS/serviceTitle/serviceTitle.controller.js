@@ -1,21 +1,9 @@
 import { serviceTitleService } from "./serviceTitle.service.js";
-import { validationResult } from "express-validator";
 import catchAsync from "../../../lib/catchAsync.js";
 import { generateResponse } from "../../../lib/responseFormate.js";
 
-const handleValidationErrors = (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        generateResponse(res, 422, false, "Validation failed", {
-            errors: errors.array().map(({ path, msg }) => ({ field: path, message: msg })),
-        });
-        return true;
-    }
-    return false;
-};
 
 const createServiceTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
 
@@ -32,14 +20,12 @@ const getAllServiceTitles = catchAsync(async (req, res) => {
 });
 
 const getServiceTitleById = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const serviceTitle = await serviceTitleService.getServiceTitleByIdFromDb(req.params.serviceTitleId);
     return generateResponse(res, 200, true, "Service Title fetched successfully", serviceTitle);
 });
 
 const updateServiceTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     const { title, subTitle } = req.body;
     const payload = {};
@@ -56,7 +42,6 @@ const updateServiceTitle = catchAsync(async (req, res) => {
 });
 
 const deleteServiceTitle = catchAsync(async (req, res) => {
-    if (handleValidationErrors(req, res)) return;
 
     await serviceTitleService.deleteServiceTitleFromDb(req.params.serviceTitleId);
     return generateResponse(res, 200, true, "Service Title deleted successfully", null);
