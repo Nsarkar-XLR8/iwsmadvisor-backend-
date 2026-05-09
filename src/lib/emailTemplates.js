@@ -206,3 +206,40 @@ export const getWelcomeEmailTemplate = ({ unsubscribeUrl }) => {
     </div>
   `;
 };
+
+export const getBlogNotificationTemplate = ({ title, subTitle, unsubscribeUrl }) => {
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 30px; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="color: #27ae60; margin-bottom: 5px;">New Blog Post Published</h2>
+        <div style="height: 2px; width: 50px; background-color: #2ecc71; margin: 10px auto;"></div>
+      </div>
+      
+      <div style="padding: 20px; background-color: #f9fbf9; border-radius: 8px; border-left: 4px solid #2ecc71; margin-bottom: 25px;">
+        <h3 style="color: #2c3e50; margin: 0 0 10px 0; font-size: 20px;">${title}</h3>
+        <p style="color: #555; line-height: 1.6; margin: 0; font-size: 16px;">${subTitle}</p>
+      </div>
+      
+      <div style="text-align: center; margin-bottom: 30px;">
+        <p style="color: #7f8c8d; font-size: 14px;">Explore the full post on our website.</p>
+        <a href="https://test.iwmsadvisors.com/insights" style="display: inline-block; padding: 12px 24px; background-color: #27ae60; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 15px;">
+          Read the Blog
+        </a>
+      </div>
+
+      <div style="border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
+        <p style="color: #95a5a6; font-size: 12px; margin-bottom: 15px;">
+          You are receiving this because you subscribed to IWM Advisors updates.
+        </p>
+        <a href="${unsubscribeUrl}" style="display: inline-block; padding: 8px 16px; background-color: #e74c3c; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 12px; transition: background-color 0.3s;">
+          Unsubscribe from Updates
+        </a>
+      </div>
+      
+      <footer style="margin-top: 30px; text-align: center; font-size: 12px; color: #bdc3c7;">
+        &copy; ${new Date().getFullYear()} IWM Advisors. All rights reserved.
+      </footer>
+    </div>
+  `;
+};
+
