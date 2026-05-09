@@ -1,6 +1,7 @@
 import { Subscribe, Brodcast } from "./broadcast.model.js";
 import { createFilter, createPaginationInfo } from "../../lib/pagination.js";
 import sendEmail from "../../lib/sendEmail.js";
+import { getInsightNotificationTemplate } from "../../lib/emailTemplates.js";
 
 /**
  * @desc    Create a new subscriber service
@@ -13,10 +14,17 @@ export const createSubscriberService = async ({ email }) => {
   // Check if email already exists
   const existingSubscriber = await Subscribe.findOne({ email });
   if (existingSubscriber) {
-    throw new Error("Email already subscribed");
+    if (existingSubscriber.isSubscribed) {
+      throw new Error("Email already subscribed");
+    } else {
+      // Re-subscribe if previously unsubscribed
+      existingSubscriber.isSubscribed = true;
+      await existingSubscriber.save();
+      return existingSubscriber;
+    }
   }
 
-  const subscriber = new Subscribe({ email });
+  const subscriber = new Subscribe({ email, isSubscribed: true });
   const savedSubscriber = await subscriber.save();
   return savedSubscriber;
 };
@@ -107,8 +115,8 @@ export const sendBroadcastToAllService = async ({ subject, html }) => {
     throw new Error("Subject and html content are required");
   }
 
-  // Get all subscribers
-  const subscribers = await Subscribe.find({});
+  // Get all subscribers who are currently opted-in
+  const subscribers = await Subscribe.find({ isSubscribed: true });
   
   if (subscribers.length === 0) {
     throw new Error("No subscribers found");
@@ -196,4 +204,68 @@ export const deleteBroadcastService = async (id) => {
 
   await Brodcast.findByIdAndDelete(id);
   return;
+};
+
+/**
+ * @desc    Unsubscribe a user by email service
+ */
+export const unsubscribeSubscriberService = async (email) => {
+  if (!email) {
+    throw new Error("Email is required");
+  }
+
+  const result = await Subscribe.findOneAndUpdate(
+    { email },
+    { isSubscribed: false },
+    { new: true }
+  );
+  if (!result) {
+    throw new Error("Subscriber not found");
+  }
+  return result;
+};
+
+/**
+ * @desc    Notify all subscribers about a new insight
+ */
+export const notifySubscribersOfInsight = async (insight) => {
+  if (!insight || !insight.title || !insight.subTitle) {
+    console.error("Invalid insight data for notification");
+    return;
+  }
+
+  const subscribers = await Subscribe.find({ isSubscribed: true });
+  if (subscribers.length === 0) {
+    return;
+  }
+
+  // Define base URL for unsubscribe link
+  // The user provided https://api.iwmsadvisors.com/api/v1/broadcast/subscribe
+  const baseUrl = "https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe";
+
+  for (const subscriber of subscribers) {
+    try {
+      const unsubscribeUrl = `${baseUrl}?email=${encodeURIComponent(subscriber.email)}`;
+      const html = getInsightNotificationTemplate({
+        title: insight.title,
+        subTitle: insight.subTitle,
+        unsubscribeUrl
+      });
+
+      await sendEmail({
+        to: subscriber.email,
+        subject: "New Insight from IWM Advisors",
+        html: html,
+      });
+
+      // Optionally save to Brodcast model
+      await new Brodcast({
+        email: subscriber.email,
+        subject: `Insight: ${insight.title}`,
+        html: html,
+      }).save();
+    } catch (error) {
+      console.error(`Failed to notify subscriber ${subscriber.email}:`, error.message);
+    }
+  }
 };
