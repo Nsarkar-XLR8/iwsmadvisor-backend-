@@ -10,6 +10,7 @@ import {
   getAllBroadcastsService,
   getBroadcastByIdService,
   deleteBroadcastService,
+  unsubscribeSubscriberService,
 } from "./broadcast.service.js";
 
 // ============= SUBSCRIBER CONTROLLERS =============
@@ -108,6 +109,40 @@ export const deleteSubscriber = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Unsubscribe a subscriber by email
+ * @route   GET /api/v1/broadcast/unsubscribe
+ * @access  Public
+ */
+export const unsubscribeSubscriber = async (req, res, next) => {
+  const { email } = req.query;
+  console.log(`Unsubscribe request received for email: ${email}`);
+
+  try {
+    await unsubscribeSubscriberService(email);
+    
+    // Send a nice HTML message or a simple success message
+    res.send(`
+      <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+        <h1 style="color: #2c3e50;">Unsubscribed Successfully</h1>
+        <p style="color: #7f8c8d;">You have been removed from our insights mailing list.</p>
+        <p style="margin-top: 20px;"><a href="https://iwmsadvisors.com" style="color: #3498db; text-decoration: none;">Return to Website</a></p>
+      </div>
+    `);
+  } catch (error) {
+    if (error.message === "Subscriber not found") {
+      return res.status(404).send(`
+        <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h1 style="color: #e74c3c;">Subscription Not Found</h1>
+          <p style="color: #7f8c8d;">The email address ${email} is not in our subscription list.</p>
+        </div>
+      `);
+    }
+    next(error);
+  }
+};
+
 
 // ============= BROADCAST CONTROLLERS =============
 
