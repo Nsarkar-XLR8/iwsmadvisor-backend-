@@ -1,5 +1,6 @@
 import Blog from './blog.model.js';
 import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
+import { notifySubscribersOfBlog } from '../broadcast/broadcast.service.js';
 
 const isNonEmptyString = (val) => typeof val === 'string' && val.trim().length > 0;
 
@@ -43,12 +44,17 @@ export const createBlogService = async ({ title, subtitle, description, image })
 
   const imagePayload = await mapFilePayload(image);
 
-  return Blog.create({
+  const blog = await Blog.create({
     title: title.trim(),
     subtitle: isNonEmptyString(subtitle) ? subtitle.trim() : '',
     description: description.trim(),
     ...(imagePayload ? { image: imagePayload } : {}),
   });
+
+  // Notify subscribers in background
+  notifySubscribersOfBlog(blog).catch(err => console.error("Notification error:", err));
+
+  return blog;
 };
 
 export const getBlogsService = async ({ page = 1, limit = 10, search }) => {
