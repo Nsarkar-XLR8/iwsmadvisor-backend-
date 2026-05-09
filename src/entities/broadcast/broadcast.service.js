@@ -1,7 +1,7 @@
 import { Subscribe, Brodcast } from "./broadcast.model.js";
 import { createFilter, createPaginationInfo } from "../../lib/pagination.js";
 import sendEmail from "../../lib/sendEmail.js";
-import { getInsightNotificationTemplate } from "../../lib/emailTemplates.js";
+import { getInsightNotificationTemplate, getWelcomeEmailTemplate } from "../../lib/emailTemplates.js";
 
 /**
  * @desc    Create a new subscriber service
@@ -20,12 +20,40 @@ export const createSubscriberService = async ({ email }) => {
       // Re-subscribe if previously unsubscribed
       existingSubscriber.isSubscribed = true;
       await existingSubscriber.save();
+
+      // Send welcome email
+      try {
+        const unsubscribeUrl = `https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe?email=${encodeURIComponent(email)}`;
+        const html = getWelcomeEmailTemplate({ unsubscribeUrl });
+        await sendEmail({
+          to: email,
+          subject: "Welcome to IWM Advisors",
+          html: html,
+        });
+      } catch (error) {
+        console.error("Failed to send welcome email:", error.message);
+      }
+
       return existingSubscriber;
     }
   }
 
   const subscriber = new Subscribe({ email, isSubscribed: true });
   const savedSubscriber = await subscriber.save();
+
+  // Send welcome email
+  try {
+    const unsubscribeUrl = `https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe?email=${encodeURIComponent(email)}`;
+    const html = getWelcomeEmailTemplate({ unsubscribeUrl });
+    await sendEmail({
+      to: email,
+      subject: "Welcome to IWM Advisors",
+      html: html,
+    });
+  } catch (error) {
+    console.error("Failed to send welcome email:", error.message);
+  }
+
   return savedSubscriber;
 };
 
@@ -174,12 +202,25 @@ export const getAllBroadcastsService = async ({
   const broadcasts = await Brodcast.find(query)
     .sort(sort)
     .skip(skip)
-    .limit(parseInt(limit));
+    .limit(parseInt(limit))
+    .lean();
+
+  const emails = [...new Set(broadcasts.map((b) => b.email))];
+  const subscriptions = await Subscribe.find({ email: { $in: emails } });
+  const subscriptionMap = subscriptions.reduce((acc, s) => {
+    acc[s.email] = s.isSubscribed;
+    return acc;
+  }, {});
+
+  const broadcastsWithStatus = broadcasts.map((b) => ({
+    ...b,
+    isSubscribe: subscriptionMap[b.email] ?? false,
+  }));
 
   const total = await Brodcast.countDocuments(query);
   const pagination = createPaginationInfo(parseInt(page), parseInt(limit), total);
 
-  return { broadcasts, pagination };
+  return { broadcasts: broadcastsWithStatus, pagination };
 };
 
 /**

@@ -169,3 +169,40 @@ export const getInsightNotificationTemplate = ({ title, subTitle, unsubscribeUrl
     </div>
   `;
 };
+
+export const getWelcomeEmailTemplate = ({ unsubscribeUrl }) => {
+  return `
+    <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; padding: 40px; border-radius: 16px; background-color: #ffffff; color: #333;">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="color: #1a237e; margin-bottom: 10px; font-size: 28px;">Welcome to IWM Advisors</h1>
+        <div style="height: 4px; width: 60px; background: linear-gradient(to right, #1a237e, #3949ab); margin: 0 auto; border-radius: 2px;"></div>
+      </div>
+
+      <div style="font-size: 16px; line-height: 1.6; color: #444; margin-bottom: 30px;">
+        <p>Hello,</p>
+        <p>Thank you for subscribing to IWM Advisors. We are thrilled to have you as part of our community.</p>
+        <p>You will now receive exclusive insights, market updates, and expert analysis directly in your inbox. Our goal is to provide you with valuable information that helps you make informed decisions and stay ahead in the industry.</p>
+        <p>In the meantime, feel free to explore our latest publications and resources on our website.</p>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 40px;">
+        <a href="https://test.iwmsadvisors.com/" style="display: inline-block; padding: 14px 30px; background-color: #1a237e; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; box-shadow: 0 4px 6px rgba(26, 35, 126, 0.2);">
+          Visit Our Website
+        </a>
+      </div>
+
+      <div style="border-top: 1px solid #f0f0f0; padding-top: 25px; text-align: center;">
+        <p style="color: #888; font-size: 13px; margin-bottom: 20px;">
+          You are receiving this email because you subscribed to IWM Advisors updates.
+        </p>
+        <a href="${unsubscribeUrl}" style="color: #d32f2f; text-decoration: none; font-size: 13px; font-weight: 500;">
+          Unsubscribe from these emails
+        </a>
+      </div>
+
+      <footer style="margin-top: 40px; text-align: center; font-size: 12px; color: #bbb;">
+        &copy; ${new Date().getFullYear()} IWM Advisors. All rights reserved.
+      </footer>
+    </div>
+  `;
+};
