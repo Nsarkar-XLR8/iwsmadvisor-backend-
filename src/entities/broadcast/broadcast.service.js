@@ -1,7 +1,7 @@
 import { Subscribe, Brodcast } from "./broadcast.model.js";
 import { createFilter, createPaginationInfo } from "../../lib/pagination.js";
 import sendEmail from "../../lib/sendEmail.js";
-import { getInsightNotificationTemplate, getWelcomeEmailTemplate } from "../../lib/emailTemplates.js";
+import { getInsightNotificationTemplate, getWelcomeEmailTemplate, getBlogNotificationTemplate } from "../../lib/emailTemplates.js";
 
 /**
  * @desc    Create a new subscriber service
@@ -335,6 +335,55 @@ export const notifySubscribersOfInsight = async (insight) => {
       }).save();
     } catch (error) {
       console.error(`Failed to notify subscriber ${subscriber.email}:`, error.message);
+    }
+  }
+};
+
+/**
+ * @desc    Notify all subscribers about a new blog
+ */
+export const notifySubscribersOfBlog = async (blog) => {
+  if (!blog || !blog.title) {
+    console.error("Invalid blog data for notification");
+    return;
+  }
+
+  const subscribers = await Subscribe.find({ isSubscribed: true });
+  if (subscribers.length === 0) {
+    return;
+  }
+
+  // Define base URL for unsubscribe link
+  const baseUrl = "https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe";
+
+  // Use subtitle if available, else a snippet of the description
+  const subTitle = blog.subtitle 
+    ? blog.subtitle 
+    : (blog.description ? blog.description.substring(0, 100) + "..." : "Check out our latest blog post!");
+
+  for (const subscriber of subscribers) {
+    try {
+      const unsubscribeUrl = `${baseUrl}?email=${encodeURIComponent(subscriber.email)}`;
+      const html = getBlogNotificationTemplate({
+        title: blog.title,
+        subTitle: subTitle,
+        unsubscribeUrl
+      });
+
+      await sendEmail({
+        to: subscriber.email,
+        subject: "New Blog Post from IWM Advisors",
+        html: html,
+      });
+
+      // Save to Brodcast model history
+      await new Brodcast({
+        email: subscriber.email,
+        subject: `Blog: ${blog.title}`,
+        html: html,
+      }).save();
+    } catch (error) {
+      console.error(`Failed to notify subscriber ${subscriber.email} of blog:`, error.message);
     }
   }
 };
