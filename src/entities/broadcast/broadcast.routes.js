@@ -30,8 +30,8 @@ router.delete('/subscribe/:id', verifyToken, adminMiddleware, deleteSubscriber);
 //broadcast routes
 router.post('/specific', verifyToken, adminMiddleware, sendBroadcast);
 router.post('/', verifyToken, adminMiddleware, sendBroadcastToAll);
-router.get('/all-subscribers', verifyToken, adminMiddleware, getAllBroadcasts);
+router.get('/all-subscribers', verifyToken, adminMiddleware, getAllSubscribers);
 router.get('/:id', verifyToken, adminMiddleware, getBroadcastById);
-router.delete('/all-subscribers/:id', verifyToken, adminMiddleware, deleteBroadcast);
+router.delete('/all-subscribers/:id', verifyToken, adminMiddleware, deleteSubscriber);
 
 export default router;
