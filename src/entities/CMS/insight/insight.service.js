@@ -1,6 +1,7 @@
 import { Insight } from "./insight.model.js";
 import { HttpStatusCode } from "axios";
 import { AppError } from "../../../errors/AppError.js";
+import { notifySubscribersOfInsight } from "../../broadcast/broadcast.service.js";
 
 const createInsightIntoDb = async (payload) => {
     // Check if identical insight already exists
@@ -11,6 +12,10 @@ const createInsightIntoDb = async (payload) => {
     if (existing) throw new AppError("An insight with the same content already exists", HttpStatusCode.Conflict);
 
     const insight = await Insight.create(payload);
+    
+    // Notify subscribers in background (don't await to avoid delaying response)
+    notifySubscribersOfInsight(insight).catch(err => console.error("Notification error:", err));
+
     return insight;
 };
 
