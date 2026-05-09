@@ -30,6 +30,13 @@ export const createSubscriberService = async ({ email }) => {
           subject: "Welcome to IWM Advisors",
           html: html,
         });
+
+        // Save to broadcast history
+        await new Brodcast({
+          email,
+          subject: "Welcome to IWM Advisors",
+          html: html,
+        }).save();
       } catch (error) {
         console.error("Failed to send welcome email:", error.message);
       }
@@ -50,6 +57,13 @@ export const createSubscriberService = async ({ email }) => {
       subject: "Welcome to IWM Advisors",
       html: html,
     });
+
+    // Save to broadcast history
+    await new Brodcast({
+      email,
+      subject: "Welcome to IWM Advisors",
+      html: html,
+    }).save();
   } catch (error) {
     console.error("Failed to send welcome email:", error.message);
   }
@@ -196,7 +210,21 @@ export const getAllBroadcastsService = async ({
   limit = 10,
   sort = "-createdAt",
 }) => {
-  const query = createFilter(search, date, "subject");
+  let query = {};
+  
+  if (date) {
+    const _date = new Date(date);
+    const startOfDay = new Date(_date.getFullYear(), _date.getMonth(), _date.getDate());
+    const endOfDay = new Date(_date.getFullYear(), _date.getMonth(), _date.getDate() + 1);
+    query.createdAt = { $gte: startOfDay, $lt: endOfDay };
+  }
+
+  if (search) {
+    query.$or = [
+      { subject: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
+  }
   const skip = (page - 1) * limit;
 
   const broadcasts = await Brodcast.find(query)
