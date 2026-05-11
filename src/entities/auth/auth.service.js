@@ -4,7 +4,6 @@ import { refreshTokenSecrete, emailExpires } from '../../core/config/config.js';
 import sendEmail from '../../lib/sendEmail.js';
 import verificationCodeTemplate from '../../lib/emailTemplates.js';
 
-
 export const registerUserService = async ({
   firstName,
   lastName,
@@ -22,20 +21,31 @@ export const registerUserService = async ({
     email,
     password,
     bio: typeof bio === 'string' ? bio : undefined,
-    phone: typeof phone === 'string' ? phone.trim() : undefined,
+    phone: typeof phone === 'string' ? phone.trim() : undefined
   });
 
   const user = await newUser.save();
 
   const { _id, role, profileImage } = user;
-  return { _id, firstName, lastName, email, role, profileImage, bio: user.bio, phone: user.phone, name: user.fullName };
+  return {
+    _id,
+    firstName,
+    lastName,
+    email,
+    role,
+    profileImage,
+    bio: user.bio,
+    phone: user.phone,
+    name: user.fullName
+  };
 };
-
 
 export const loginUserService = async ({ email, password }) => {
   if (!email || !password) throw new Error('Email and password are required');
 
-  const user = await User.findOne({ email }).select("_id firstName lastName email role profileImage");
+  const user = await User.findOne({ email }).select(
+    '_id firstName lastName email role profileImage'
+  );
 
   if (!user) throw new Error('User not found');
 
@@ -52,9 +62,8 @@ export const loginUserService = async ({ email, password }) => {
   user.refreshToken = user.generateRefreshToken(payload);
   await user.save({ validateBeforeSave: false });
 
-  return data
+  return data;
 };
-
 
 export const refreshAccessTokenService = async (refreshToken) => {
   if (!refreshToken) throw new Error('No refresh token provided');
@@ -63,24 +72,24 @@ export const refreshAccessTokenService = async (refreshToken) => {
 
   if (!user) throw new Error('Invalid refresh token');
 
-  const decoded = jwt.verify(refreshToken, refreshTokenSecrete)
+  const decoded = jwt.verify(refreshToken, refreshTokenSecrete);
 
-  if (!decoded || decoded._id !== user._id.toString()) throw new Error('Invalid refresh token')
+  if (!decoded || decoded._id !== user._id.toString())
+    throw new Error('Invalid refresh token');
 
-  const payload = { _id: user._id , role: user.role }
+  const payload = { _id: user._id, role: user.role };
 
   const accessToken = user.generateAccessToken(payload);
   const newRefreshToken = user.generateRefreshToken(payload);
 
   user.refreshToken = newRefreshToken;
-  await user.save({ validateBeforeSave: false })
+  await user.save({ validateBeforeSave: false });
 
   return {
     accessToken,
     refreshToken: newRefreshToken
-  }
+  };
 };
-
 
 export const forgetPasswordService = async (email) => {
   if (!email) throw new Error('Email is required');
@@ -101,12 +110,11 @@ export const forgetPasswordService = async (email) => {
   await sendEmail({
     to: email,
     subject: 'Password Reset OTP',
-    html: verificationCodeTemplate(otp),
+    html: verificationCodeTemplate(otp)
   });
 
   return;
 };
-
 
 export const verifyCodeService = async ({ email, otp }) => {
   if (!email || !otp) throw new Error('Email and otp are required');
@@ -126,13 +134,12 @@ export const verifyCodeService = async ({ email, otp }) => {
   user.otp = null;
   user.otpExpires = null;
   user.otpVerified = true;
-  user.resetExpires = new Date(Date.now() + 15 * 60 * 1000); 
+  user.resetExpires = new Date(Date.now() + 15 * 60 * 1000);
 
   await user.save({ validateBeforeSave: false });
 
   return;
 };
-
 
 export const resetPasswordService = async ({ email, newPassword }) => {
   if (!email || !newPassword)
@@ -158,9 +165,13 @@ export const resetPasswordService = async ({ email, newPassword }) => {
   return;
 };
 
-
-export const changePasswordService = async ({ userId, oldPassword, newPassword }) => {
-  if (!userId || !oldPassword || !newPassword) throw new Error('User id, old password and new password are required');
+export const changePasswordService = async ({
+  userId,
+  oldPassword,
+  newPassword
+}) => {
+  if (!userId || !oldPassword || !newPassword)
+    throw new Error('User id, old password and new password are required');
 
   const user = await User.findById(userId);
   if (!user) throw new Error('User not found');
