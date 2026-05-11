@@ -1,7 +1,13 @@
 import { Subscribe, Brodcast } from "./broadcast.model.js";
 import { createFilter, createPaginationInfo } from "../../lib/pagination.js";
 import sendEmail from "../../lib/sendEmail.js";
-import { getInsightNotificationTemplate, getWelcomeEmailTemplate, getBlogNotificationTemplate } from "../../lib/emailTemplates.js";
+import { 
+  getInsightNotificationTemplate, 
+  getWelcomeEmailTemplate, 
+  getBlogNotificationTemplate,
+  getUnsubscribeSection,
+  commonStyles
+} from "../../lib/emailTemplates.js";
 
 /**
  * @desc    Create a new subscriber service
@@ -128,18 +134,22 @@ export const sendBroadcastService = async ({ email, subject, html }) => {
   }
 
   try {
+    // Append unsubscribe link
+    const unsubscribeUrl = `https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe?email=${encodeURIComponent(email)}`;
+    const finalHtml = `${commonStyles} ${html} ${getUnsubscribeSection(unsubscribeUrl)}`;
+
     // Send email
     await sendEmail({
       to: email,
       subject: subject,
-      html: html,
+      html: finalHtml,
     });
 
     // Save broadcast record
     const broadcast = new Brodcast({
       email,
       subject,
-      html,
+      html: finalHtml,
     });
 
     const savedBroadcast = await broadcast.save();
@@ -174,17 +184,21 @@ export const sendBroadcastToAllService = async ({ subject, html }) => {
   // Send email to each subscriber
   for (const subscriber of subscribers) {
     try {
+      // Append unsubscribe link
+      const unsubscribeUrl = `https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
+      const finalHtml = `${commonStyles} ${html} ${getUnsubscribeSection(unsubscribeUrl)}`;
+
       await sendEmail({
         to: subscriber.email,
         subject: subject,
-        html: html,
+        html: finalHtml,
       });
 
       // Save broadcast record
       await new Brodcast({
         email: subscriber.email,
         subject,
-        html,
+        html: finalHtml,
       }).save();
 
       results.sent++;
