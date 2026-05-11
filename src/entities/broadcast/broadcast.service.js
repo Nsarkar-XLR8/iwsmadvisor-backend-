@@ -33,14 +33,14 @@ export const createSubscriberService = async ({ email }) => {
         const html = getWelcomeEmailTemplate({ unsubscribeUrl });
         await sendEmail({
           to: email,
-          subject: "Welcome to IWM Advisors",
+          subject: "Welcome to IWMS Advisors",
           html: html,
         });
 
         // Save to broadcast history
         await new Brodcast({
           email,
-          subject: "Welcome to IWM Advisors",
+          subject: "Welcome to IWMS Advisors",
           html: html,
         }).save();
       } catch (error) {
@@ -60,14 +60,14 @@ export const createSubscriberService = async ({ email }) => {
     const html = getWelcomeEmailTemplate({ unsubscribeUrl });
     await sendEmail({
       to: email,
-      subject: "Welcome to IWM Advisors",
+      subject: "Welcome to IWMS Advisors",
       html: html,
     });
 
     // Save to broadcast history
     await new Brodcast({
       email,
-      subject: "Welcome to IWM Advisors",
+      subject: "Welcome to IWMS Advisors",
       html: html,
     }).save();
   } catch (error) {
