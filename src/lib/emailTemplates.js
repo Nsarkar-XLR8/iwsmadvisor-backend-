@@ -20,7 +20,7 @@ export const getUnsubscribeSection = (unsubscribeUrl) => {
         You are receiving this because you are part of IWMS Advisors community.
       </p>
       <a href="${unsubscribeUrl}" class="unsubscribe-btn" style="display: inline-block; padding: 12px 24px; background-color: #e74c3c; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(231, 76, 60, 0.2);">
-        Unsubscribe from these emails
+        Unsubscribe
       </a>
     </div>
   `;
