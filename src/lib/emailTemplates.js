@@ -205,6 +205,7 @@ export const getPaymentSuccessForAdminTemplate = ({
 export const getInsightNotificationTemplate = ({
   title,
   subTitle,
+  id,
   unsubscribeUrl
 }) => {
   return `
@@ -222,7 +223,8 @@ export const getInsightNotificationTemplate = ({
       
       <div style="text-align: center; margin-bottom: 30px;">
         <p style="color: #7f8c8d; font-size: 15px;">We hope you find this insight valuable for your business growth.</p>
-        <a href="https://test.iwmsadvisors.com/insights" class="primary-btn" style="display: inline-block; padding: 14px 30px; background-color: #1a237e; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; margin-top: 10px; box-shadow: 0 4px 6px rgba(26, 35, 126, 0.2);">
+        <a href="https://test.iwmsadvisors.com/insights/${id}"
+        class="primary-btn" style="display: inline-block; padding: 14px 30px; background-color: #1a237e; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; margin-top: 10px; box-shadow: 0 4px 6px rgba(26, 35, 126, 0.2);">
           View Full Insight
         </a>
       </div>
@@ -268,6 +270,7 @@ export const getWelcomeEmailTemplate = ({ unsubscribeUrl }) => {
 };
 
 export const getBlogNotificationTemplate = ({
+  id,
   title,
   subTitle,
   unsubscribeUrl
@@ -276,7 +279,7 @@ export const getBlogNotificationTemplate = ({
     ${commonStyles}
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 35px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 6px 20px rgba(0,0,0,0.06);">
       <div style="text-align: center; margin-bottom: 25px;">
-        <h2 style="color: #27ae60; margin-bottom: 5px;">New Blog Post Published</h2>
+        <h2 style="color: #27ae60; margin-bottom: 5px;">New Insights Published</h2>
         <div style="height: 3px; width: 60px; background-color: #2ecc71; margin: 10px auto; border-radius: 2px;"></div>
       </div>
       
@@ -287,8 +290,8 @@ export const getBlogNotificationTemplate = ({
       
       <div style="text-align: center; margin-bottom: 35px;">
         <p style="color: #7f8c8d; font-size: 15px; margin-bottom: 20px;">Explore the full post on our website.</p>
-        <a href="https://test.iwmsadvisors.com/insights" class="primary-btn" style="display: inline-block; padding: 14px 32px; background-color: #27ae60; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.25);">
-          Read the Blog
+        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 14px 32px; background-color: #27ae60; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.25);">
+          Read the Insights
         </a>
       </div>
 
