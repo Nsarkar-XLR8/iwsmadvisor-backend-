@@ -122,12 +122,11 @@ export const unsubscribeSubscriber = async (req, res, next) => {
   try {
     await unsubscribeSubscriberService(email);
     
-    // Send a nice HTML message or a simple success message
     res.send(`
       <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
         <h1 style="color: #2c3e50;">Unsubscribed Successfully</h1>
         <p style="color: #7f8c8d;">You have been removed from our insights mailing list.</p>
-        <p style="margin-top: 20px;"><a href="https://iwmsadvisors.com" style="color: #3498db; text-decoration: none;">Return to Website</a></p>
+        <p style="margin-top: 20px;"><a href="https://test.iwmsadvisors.com" style="color: #3498db; text-decoration: none;">Return to Website</a></p>
       </div>
     `);
   } catch (error) {

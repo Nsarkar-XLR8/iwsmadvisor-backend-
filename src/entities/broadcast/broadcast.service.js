@@ -330,6 +330,7 @@ export const notifySubscribersOfInsight = async (insight) => {
     try {
       const unsubscribeUrl = `${baseUrl}?email=${encodeURIComponent(subscriber.email)}`;
       const html = getInsightNotificationTemplate({
+        id: insight._id,
         title: insight.title,
         subTitle: insight.subTitle,
         unsubscribeUrl
@@ -337,7 +338,7 @@ export const notifySubscribersOfInsight = async (insight) => {
 
       await sendEmail({
         to: subscriber.email,
-        subject: "New Insight from IWM Advisors",
+        subject: "New Insight from IWMS Advisors",
         html: html,
       });
 
@@ -379,6 +380,7 @@ export const notifySubscribersOfBlog = async (blog) => {
     try {
       const unsubscribeUrl = `${baseUrl}?email=${encodeURIComponent(subscriber.email)}`;
       const html = getBlogNotificationTemplate({
+        id: blog._id,
         title: blog.title,
         subTitle: subTitle,
         unsubscribeUrl
@@ -386,7 +388,7 @@ export const notifySubscribersOfBlog = async (blog) => {
 
       await sendEmail({
         to: subscriber.email,
-        subject: "New Blog Post from IWM Advisors",
+        subject: "New Insights from IWMS Advisors",
         html: html,
       });
 
