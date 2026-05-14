@@ -300,18 +300,18 @@ export const getBlogNotificationTemplate = ({
     ${commonStyles}
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #1a237e; margin-bottom: 10px;">New Insight from IWMS Advisors</h2>
-        <div style="height: 3px; width: 50px; background-color: #1a237e; margin: 0 auto; border-radius: 2px;"></div>
+        <h2 style="color: #0D67A9; margin-bottom: 10px;">New Insight from IWMS Advisors</h2>
+        <div style="height: 3px; width: 50px; background-color: #0D67A9; margin: 0 auto; border-radius: 2px;"></div>
         <p style="color: #7f8c8d; font-size: 16px; margin-top: 15px;">We’ve published a new insight that may be helpful to your team.</p>
       </div>
       
-      <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #1a237e; margin-bottom: 35px; transition: all 0.3s ease;">
-        <h3 style="color: #1a237e; margin: 0 0 15px 0; font-size: 22px; line-height: 1.4;">${title}</h3>
+      <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #0D67A9; margin-bottom: 35px; transition: all 0.3s ease;">
+        <h3 style="color: #0D67A9; margin: 0 0 15px 0; font-size: 22px; line-height: 1.4;">${title}</h3>
         <p style="color: #444; line-height: 1.7; margin: 0; font-size: 16px;">${subTitle}</p>
       </div>
       
       <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #1a237e; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);">
+        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #0D67A9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);">
           Read the Full Insight
         </a>
       </div>
