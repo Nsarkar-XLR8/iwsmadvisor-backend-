@@ -6,7 +6,7 @@ export const commonStyles = `
       transform: translateY(-1px);
     }
     .primary-btn:hover {
-      background-color: #000051 !important;
+      background-color: #0a548a !important;
       transform: translateY(-1px);
     }
     .card:hover {
@@ -244,8 +244,7 @@ export const getInsightNotificationTemplate = ({
       </div>
       
       <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://test.iwmsadvisors.com/insights/${id}"
-        class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #1a237e; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);">
+        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #0D67A9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(13, 103, 169, 0.2);">
           Read the Full Insight
         </a>
       </div>
@@ -311,7 +310,7 @@ export const getBlogNotificationTemplate = ({
       </div>
       
       <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #0D67A9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);">
+        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #0D67A9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(13, 103, 169, 0.2);">
           Read the Full Insight
         </a>
       </div>
