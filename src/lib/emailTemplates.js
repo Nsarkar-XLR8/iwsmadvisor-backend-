@@ -33,14 +33,14 @@ const verificationCodeTemplate = (code, unsubscribeUrl) => `
   ${commonStyles}
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
     <div style="text-align: center; margin-bottom: 30px;">
-      <h2 style="color: #1a237e; margin-bottom: 10px;">Verification Code</h2>
-      <div style="height: 3px; width: 50px; background-color: #1a237e; margin: 0 auto; border-radius: 2px;"></div>
+      <h2 style="color: #305088; margin-bottom: 10px;">Verification Code</h2>
+      <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
     </div>
     
     <div style="background-color: #fcfcfc; padding: 30px; border-radius: 12px; text-align: center; border: 1px solid #f0f0f0;">
       <p style="font-size: 16px; color: #444; margin-bottom: 20px;">Hello,</p>
       <p style="font-size: 16px; color: #444; margin-bottom: 25px;">Thank you for using IWMS Advisors. Your verification code is:</p>
-      <p style="font-size: 36px; font-weight: bold; text-align: center; color: #1a237e; letter-spacing: 8px; margin: 25px 0; font-family: monospace;">${code}</p>
+      <p style="font-size: 36px; font-weight: bold; text-align: center; color: #305088; letter-spacing: 8px; margin: 25px 0; font-family: monospace;">${code}</p>
       <p style="font-size: 14px; color: #7f8c8d;">Please enter this code within 5 minutes to verify your account.</p>
     </div>
     
@@ -68,8 +68,8 @@ export const getPaymentSuccessTemplate = ({ name, eventId, slots, unsubscribeUrl
     ${commonStyles}
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #1a237e; margin-bottom: 10px;">Booking Confirmed</h2>
-        <div style="height: 3px; width: 50px; background-color: #1a237e; margin: 0 auto; border-radius: 2px;"></div>
+        <h2 style="color: #305088; margin-bottom: 10px;">Booking Confirmed</h2>
+        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
       </div>
       
       <div style="color: #444; line-height: 1.6;">
@@ -77,7 +77,7 @@ export const getPaymentSuccessTemplate = ({ name, eventId, slots, unsubscribeUrl
         <p>Your payment has been successfully received and your booking with IWMS Advisors has been confirmed.</p>
         
         <div style="background-color: #fcfcfc; padding: 25px; border-radius: 12px; border: 1px solid #f0f0f0; margin: 25px 0;">
-          <p style="margin-top: 0; color: #1a237e; font-weight: bold;">Booking Details:</p>
+          <p style="margin-top: 0; color: #305088; font-weight: bold;">Booking Details:</p>
           <p><strong>Event ID:</strong> ${eventId}</p>
           <p style="margin-bottom: 8px;"><strong>Slot(s) Booked:</strong></p>
           <ul style="margin-bottom: 0; padding-left: 20px; color: #555;">
@@ -123,12 +123,12 @@ export const getConflictAfterPaymentTemplate = ({
     ${commonStyles}
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #1a237e; margin-bottom: 10px;">Booking Update</h2>
-        <div style="height: 3px; width: 50px; background-color: #1a237e; margin: 0 auto; border-radius: 2px;"></div>
+        <h2 style="color: #305088; margin-bottom: 10px;">Booking Update</h2>
+        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
       </div>
 
-      <div style="background-color: #fcfcfc; border-left: 4px solid #1a237e; padding: 20px; margin-bottom: 25px; color: #444; border: 1px solid #f0f0f0; border-left-width: 4px;">
-        <strong style="color: #1a237e;">Notice:</strong> Some of the selected slots were already booked by the time payment completed.
+      <div style="background-color: #fcfcfc; border-left: 4px solid #305088; padding: 20px; margin-bottom: 25px; color: #444; border: 1px solid #f0f0f0; border-left-width: 4px;">
+        <strong style="color: #305088;">Notice:</strong> Some of the selected slots were already booked by the time payment completed.
         The booking was not created, and the payment has been automatically refunded.
       </div>
 
@@ -195,12 +195,12 @@ export const getPaymentSuccessForAdminTemplate = ({
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #1a237e; margin-bottom: 10px;">New Booking Received</h2>
-        <div style="height: 3px; width: 50px; background-color: #1a237e; margin: 0 auto; border-radius: 2px;"></div>
+        <h2 style="color: #305088; margin-bottom: 10px;">New Booking Received</h2>
+        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
       </div>
-
+ 
       <div style="background-color: #fcfcfc; padding: 25px; border-radius: 12px; border: 1px solid #f0f0f0; margin: 25px 0;">
-        <p style="margin-top: 0; color: #1a237e; font-weight: bold;">User Details:</p>
+        <p style="margin-top: 0; color: #305088; font-weight: bold;">User Details:</p>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Phone:</strong> ${phone}</p>
@@ -208,12 +208,12 @@ export const getPaymentSuccessForAdminTemplate = ({
       </div>
       
       <div style="color: #444; line-height: 1.6;">
-        <p style="font-weight: bold; color: #1a237e;">Slot(s) Booked:</p>
+        <p style="font-weight: bold; color: #305088;">Slot(s) Booked:</p>
         <ul style="color: #555; padding-left: 20px;">
           ${slotDetails}
         </ul>
         
-        <p style="color: #1a237e; font-weight: bold; margin-top: 25px; text-align: center;">This booking has been paid and confirmed via Stripe.</p>
+        <p style="color: #305088; font-weight: bold; margin-top: 25px; text-align: center;">This booking has been paid and confirmed via Stripe.</p>
       </div>
       
       <footer style="margin-top: 40px; text-align: center; font-size: 12px; color: #bdc3c7; border-top: 1px solid #f0f0f0; padding-top: 25px;">
@@ -233,18 +233,22 @@ export const getInsightNotificationTemplate = ({
     ${commonStyles}
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #0D67A9; margin-bottom: 10px;">New Insight from IWMS Advisors</h2>
-        <div style="height: 3px; width: 50px; background-color: #0D67A9; margin: 0 auto; border-radius: 2px;"></div>
+        <h2 style="color: #305088; margin-bottom: 10px;">New Insight from IWMS Advisors</h2>
+        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
         <p style="color: #7f8c8d; font-size: 16px; margin-top: 15px;">We’ve published a new insight that may be helpful to your team.</p>
       </div>
       
-      <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #0D67A9; margin-bottom: 35px; transition: all 0.3s ease;">
-        <h3 style="color: #0D67A9; margin: 0 0 15px 0; font-size: 22px; line-height: 1.4;">${title}</h3>
+      <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #305088; margin-bottom: 35px; transition: all 0.3s ease;">
+        <h3 style="color: #305088; margin: 0 0 15px 0; font-size: 22px; line-height: 1.4;">${title}</h3>
         <p style="color: #444; line-height: 1.7; margin: 0; font-size: 16px;">${subTitle}</p>
+      </div>
+
+      <div style="text-align: center; color: #444; font-size: 16px; margin-bottom: 20px;">
+        <p>Read Full Insights In The IWMS Advisors Website</p>
       </div>
       
       <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #0D67A9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(13, 103, 169, 0.2);">
+        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #305088; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(48, 80, 136, 0.2);">
           Read the Full Insight
         </a>
       </div>
@@ -263,8 +267,8 @@ export const getWelcomeEmailTemplate = ({ unsubscribeUrl }) => {
     ${commonStyles}
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
       <div style="text-align: center; margin-bottom: 35px;">
-        <h2 style="color: #0D67A9; margin-bottom: 10px;">Welcome to IWMS Advisors</h2>
-        <div style="height: 3px; width: 50px; background-color: #0D67A9; margin: 0 auto; border-radius: 2px;"></div>
+        <h2 style="color: #305088; margin-bottom: 10px;">Welcome to IWMS Advisors</h2>
+        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
       </div>
 
       <div style="font-size: 16px; line-height: 1.8; color: #444; margin-bottom: 35px;">
@@ -275,7 +279,7 @@ export const getWelcomeEmailTemplate = ({ unsubscribeUrl }) => {
       </div>
 
       <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://test.iwmsadvisors.com/" class="primary-btn" style="display: inline-block; padding: 16px 40px; background-color: #1a237e; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(26, 35, 126, 0.2);">
+        <a href="https://test.iwmsadvisors.com/" class="primary-btn" style="display: inline-block; padding: 16px 40px; background-color: #305088; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(48, 80, 136, 0.2);">
           Explore Our Website
         </a>
       </div>
@@ -299,18 +303,22 @@ export const getBlogNotificationTemplate = ({
     ${commonStyles}
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
       <div style="text-align: center; margin-bottom: 30px;">
-        <h2 style="color: #0D67A9; margin-bottom: 10px;">New Insight from IWMS Advisors</h2>
-        <div style="height: 3px; width: 50px; background-color: #0D67A9; margin: 0 auto; border-radius: 2px;"></div>
+        <h2 style="color: #305088; margin-bottom: 10px;">New Insight from IWMS Advisors</h2>
+        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
         <p style="color: #7f8c8d; font-size: 16px; margin-top: 15px;">We’ve published a new insight that may be helpful to your team.</p>
       </div>
       
-      <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #0D67A9; margin-bottom: 35px; transition: all 0.3s ease;">
-        <h3 style="color: #0D67A9; margin: 0 0 15px 0; font-size: 22px; line-height: 1.4;">${title}</h3>
+      <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #305088; margin-bottom: 35px; transition: all 0.3s ease;">
+        <h3 style="color: #305088; margin: 0 0 15px 0; font-size: 22px; line-height: 1.4;">${title}</h3>
         <p style="color: #444; line-height: 1.7; margin: 0; font-size: 16px;">${subTitle}</p>
+      </div>
+
+      <div style="text-align: center; color: #444; font-size: 16px; margin-bottom: 20px;">
+        <p>Read Full Insights In The IWMS Advisors Website</p>
       </div>
       
       <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #0D67A9; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(13, 103, 169, 0.2);">
+        <a href="https://test.iwmsadvisors.com/insights/${id}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #305088; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(48, 80, 136, 0.2);">
           Read the Full Insight
         </a>
       </div>
