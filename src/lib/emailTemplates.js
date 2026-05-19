@@ -56,7 +56,12 @@ const verificationCodeTemplate = (code, unsubscribeUrl) => `
 
 export default verificationCodeTemplate;
 
-export const getPaymentSuccessTemplate = ({ name, eventId, slots, unsubscribeUrl }) => {
+export const getPaymentSuccessTemplate = ({
+  name,
+  eventId,
+  slots,
+  unsubscribeUrl
+}) => {
   const slotDetails = slots
     .map(
       (slot, index) =>
