@@ -56,7 +56,12 @@ const verificationCodeTemplate = (code, unsubscribeUrl) => `
 
 export default verificationCodeTemplate;
 
-export const getPaymentSuccessTemplate = ({ name, eventId, slots, unsubscribeUrl }) => {
+export const getPaymentSuccessTemplate = ({
+  name,
+  eventId,
+  slots,
+  unsubscribeUrl
+}) => {
   const slotDetails = slots
     .map(
       (slot, index) =>
@@ -255,9 +260,9 @@ export const getInsightNotificationTemplate = ({
 
       ${getUnsubscribeSection(unsubscribeUrl)}
       
-      <footer style="margin-top: 40px; text-align: center; font-size: 12px; color: #bdc3c7; border-top: 1px solid #f0f0f0; padding-top: 25px;">
+        <p style="margin-top: 40px;  text-align: center; display:flex; flex-direction: column; justify-items:center; align-items:center; font-size: 12px; color: #bdc3c7; border-top: 1px solid #f0f0f0; padding-top: 25px;">
         &copy; ${new Date().getFullYear()} IWMS Advisors. All rights reserved.
-      </footer>
+      </p>
     </div>
   `;
 };
@@ -323,11 +328,16 @@ export const getBlogNotificationTemplate = ({
         </a>
       </div>
 
-      ${getUnsubscribeSection(unsubscribeUrl)}
-      
-      <footer style="margin-top: 40px; text-align: center; font-size: 12px; color: #bdc3c7; border-top: 1px solid #f0f0f0; padding-top: 25px;">
+      <div style="margin-top: 30px; text-align: center;">
+        ${getUnsubscribeSection(unsubscribeUrl)}
+      </div>
+
+
+      <p style="margin-top: 40px;  text-align: center; display:flex; flex-direction: column; justify-items:center; align-items:center; font-size: 12px; color: #bdc3c7; border-top: 1px solid #f0f0f0; padding-top: 25px;">
         &copy; ${new Date().getFullYear()} IWMS Advisors. All rights reserved.
-      </footer>
+      </p>
+      
+    
     </div>
   `;
 };
