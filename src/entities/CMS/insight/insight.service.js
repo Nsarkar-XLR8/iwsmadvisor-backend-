@@ -14,7 +14,7 @@ const createInsightIntoDb = async (payload) => {
     const insight = await Insight.create(payload);
     
     // Notify subscribers in background (don't await to avoid delaying response)
-    notifySubscribersOfInsight(insight).catch(err => console.error("Notification error:", err));
+    // notifySubscribersOfInsight(insight).catch(err => console.error("Notification error:", err));
 
     return insight;
 };
