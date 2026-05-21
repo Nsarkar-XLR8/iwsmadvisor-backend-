@@ -96,6 +96,7 @@ export const createServicePageService = async ({
   description,
   faq,
   image,
+  order,
 }) => {
   const headingStr = toTrimmedString(heading);
   if (!headingStr) {
@@ -107,6 +108,7 @@ export const createServicePageService = async ({
   const subtitlesArr = parseSubtitles(subtitles);
   const imagePayload = await mapFilePayload(image);
   const faqArr = normalizeFaq(faq);
+  const orderNum = Number.isFinite(Number(order)) ? Number(order) : 0;
 
   return ServicePage.create({
     heading: headingStr,
@@ -116,6 +118,7 @@ export const createServicePageService = async ({
     description: toTrimmedString(description),
     ...(imagePayload ? { image: imagePayload } : {}),
     faq: faqArr,
+    order: orderNum,
   });
 };
 
@@ -135,7 +138,7 @@ export const getServicePagesService = async ({ page = 1, limit = 10, search }) =
   const [total, items] = await Promise.all([
     ServicePage.countDocuments(filter),
     ServicePage.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ order: 1, createdAt: -1 })
       .skip((safePage - 1) * safeLimit)
       .limit(safeLimit),
   ]);
@@ -154,7 +157,7 @@ export const getServicePagesService = async ({ page = 1, limit = 10, search }) =
 export const getServicePageByIdService = async (id) => ServicePage.findById(id);
 
 export const updateServicePageService = async (id, data) => {
-  const allowed = ['heading', 'subtitles', 'title', 'guideline', 'description', 'faq', 'image'];
+  const allowed = ['heading', 'subtitles', 'title', 'guideline', 'description', 'faq', 'image', 'order'];
   const updates = {};
 
   for (const field of allowed) {
@@ -178,6 +181,11 @@ export const updateServicePageService = async (id, data) => {
       if (field === 'image') {
         const imagePayload = await mapFilePayload(data[field]);
         if (imagePayload) updates.image = imagePayload;
+        continue;
+      }
+
+      if (field === 'order') {
+        updates.order = Number.isFinite(Number(data.order)) ? Number(data.order) : 0;
         continue;
       }
 
