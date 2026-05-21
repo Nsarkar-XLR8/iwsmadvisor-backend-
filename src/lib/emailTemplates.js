@@ -20,7 +20,7 @@ export const getUnsubscribeSection = (unsubscribeUrl) => {
   return `
     <div style="padding-top: 30px; text-align: center; margin-top: 20px;">
       <p style="color: #7f8c8d; font-size: 13px; margin-bottom: 15px;">
-        You are receiving this because you are part of the IWMS Advisors community.
+        You are receiving this email because you are part of the IWMS Advisors community.
       </p>
       <a href="${unsubscribeUrl}" style="color: #7f8c8d; text-decoration: underline; font-size: 13px;">
         Unsubscribe
@@ -310,7 +310,7 @@ export const getBlogNotificationTemplate = ({
       <div style="text-align: center; margin-bottom: 30px;">
         <h2 style="color: #305088; margin-bottom: 10px;">New Insight from IWMS Advisors</h2>
         <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
-        <p style="color: #7f8c8d; font-size: 16px; margin-top: 15px;">We’ve published a new insight that may be helpful to your team.</p>
+        <p style="color: #7f8c8d; font-size: 16px; margin-top: 15px;">We’ve published a new insight to help your team stay informed on IWMS strategy and IBM MREF best practices.</p>
       </div>
       
       <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #305088; margin-bottom: 35px; transition: all 0.3s ease;">
@@ -319,7 +319,7 @@ export const getBlogNotificationTemplate = ({
       </div>
 
       <div style="text-align: center; color: #444; font-size: 16px; margin-bottom: 20px;">
-        <p>Read Full Insights In The IWMS Advisors Website</p>
+        <p>Read the full insight on the IWMS Advisors website</p>
       </div>
       
       <div style="text-align: center; margin-bottom: 20px;">
