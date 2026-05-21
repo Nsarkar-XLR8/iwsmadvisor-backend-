@@ -33,6 +33,7 @@ export const createServicePage = async (req, res) => {
     const guideline = pickField(req.body, ['guideline', 'Guideline', 'guidance', 'Guidance']);
     const description = pickField(req.body, ['description', 'Description']);
     const faq = pickField(req.body, ['faq', 'FAQ', 'faqs']);
+    const order = pickField(req.body, ['order', 'Order']);
 
     const servicePage = await createServicePageService({
       heading,
@@ -42,6 +43,7 @@ export const createServicePage = async (req, res) => {
       description,
       faq,
       image: imageFile,
+      order,
     });
 
     return res.status(201).json({
@@ -114,6 +116,7 @@ export const updateServicePage = async (req, res) => {
     const guideline = pickField(req.body, ['guideline', 'Guideline', 'guidance', 'Guidance']);
     const description = pickField(req.body, ['description', 'Description']);
     const faq = pickField(req.body, ['faq', 'FAQ', 'faqs']);
+    const order = pickField(req.body, ['order', 'Order']);
 
     const result = await updateServicePageService(id, {
       ...(heading !== undefined ? { heading } : {}),
@@ -123,6 +126,7 @@ export const updateServicePage = async (req, res) => {
       ...(description !== undefined ? { description } : {}),
       ...(faq !== undefined ? { faq } : {}),
       ...(imageFile ? { image: imageFile } : {}),
+      ...(order !== undefined ? { order } : {}),
     });
 
     if (result?.notFound) {
