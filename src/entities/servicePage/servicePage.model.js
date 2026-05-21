@@ -23,6 +23,7 @@ const ServicePageSchema = new mongoose.Schema(
       url: { type: String },
     },
     faq: [FaqSchema],
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
