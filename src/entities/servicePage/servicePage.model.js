@@ -22,6 +22,7 @@ const ServicePageSchema = new mongoose.Schema(
       size: { type: Number },
       url: { type: String },
     },
+    icon: { type: mongoose.Schema.Types.Mixed },
     faq: [FaqSchema],
     order: { type: Number, default: 0 },
   },
