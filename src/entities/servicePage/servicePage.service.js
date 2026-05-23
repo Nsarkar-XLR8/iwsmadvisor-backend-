@@ -50,6 +50,32 @@ const mapFilePayload = async (file) => {
   };
 };
 
+const parseIcon = async (val) => {
+  if (val === undefined) return undefined;
+  if (val === null) return null;
+
+  // If it's a file upload (multer object/array)
+  if (typeof val === 'object' && (val.path || val.fieldname || (Array.isArray(val) && val[0]?.path))) {
+    return mapFilePayload(val);
+  }
+
+  if (typeof val === 'string') {
+    const trimmed = val.trim();
+    if (!trimmed) return '';
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (parsed && typeof parsed === 'object') {
+        return parsed;
+      }
+    } catch (_) {
+      // Fall through to string
+    }
+    return trimmed;
+  }
+
+  return val;
+};
+
 const normalizeFaq = (val) => {
   let items = [];
   if (Array.isArray(val)) {
@@ -96,6 +122,7 @@ export const createServicePageService = async ({
   description,
   faq,
   image,
+  icon,
   order,
 }) => {
   const headingStr = toTrimmedString(heading);
@@ -107,6 +134,7 @@ export const createServicePageService = async ({
 
   const subtitlesArr = parseSubtitles(subtitles);
   const imagePayload = await mapFilePayload(image);
+  const iconPayload = await parseIcon(icon);
   const faqArr = normalizeFaq(faq);
   const orderNum = Number.isFinite(Number(order)) ? Number(order) : 0;
 
@@ -117,6 +145,7 @@ export const createServicePageService = async ({
     guideline: toTrimmedString(guideline),
     description: toTrimmedString(description),
     ...(imagePayload ? { image: imagePayload } : {}),
+    ...(iconPayload !== undefined ? { icon: iconPayload } : {}),
     faq: faqArr,
     order: orderNum,
   });
@@ -157,7 +186,7 @@ export const getServicePagesService = async ({ page = 1, limit = 10, search }) =
 export const getServicePageByIdService = async (id) => ServicePage.findById(id);
 
 export const updateServicePageService = async (id, data) => {
-  const allowed = ['heading', 'subtitles', 'title', 'guideline', 'description', 'faq', 'image', 'order'];
+  const allowed = ['heading', 'subtitles', 'title', 'guideline', 'description', 'faq', 'image', 'icon', 'order'];
   const updates = {};
 
   for (const field of allowed) {
@@ -181,6 +210,12 @@ export const updateServicePageService = async (id, data) => {
       if (field === 'image') {
         const imagePayload = await mapFilePayload(data[field]);
         if (imagePayload) updates.image = imagePayload;
+        continue;
+      }
+
+      if (field === 'icon') {
+        const iconPayload = await parseIcon(data[field]);
+        if (iconPayload !== undefined) updates.icon = iconPayload;
         continue;
       }
 
