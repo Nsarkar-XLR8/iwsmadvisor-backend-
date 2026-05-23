@@ -7,10 +7,11 @@ import {
   deleteServicePageService,
 } from './servicePage.service.js';
 
-const firstAvailableFile = (files) => {
+const firstAvailableFile = (files, excludeKeys = []) => {
   if (!files) return undefined;
   if (Array.isArray(files)) return files[0];
   for (const key of Object.keys(files)) {
+    if (excludeKeys.includes(key)) continue;
     if (files[key]?.[0]) return files[key][0];
   }
   return undefined;
@@ -26,7 +27,8 @@ const pickField = (body, keys) => {
 // Admin: create service page (multipart/form-data)
 export const createServicePage = async (req, res) => {
   try {
-    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
+    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files, ['icon']);
+    const icon = req.files?.icon?.[0] || pickField(req.body, ['icon', 'Icon', 'iconName', 'iconClass']);
     const heading = pickField(req.body, ['heading', 'Heading', 'pageHeading', 'pageTitle']);
     const subtitles = pickField(req.body, ['subtitles', 'subtitle', 'subTitles', 'Subtitles']);
     const title = pickField(req.body, ['title', 'Title', 'serviceTitle']);
@@ -43,6 +45,7 @@ export const createServicePage = async (req, res) => {
       description,
       faq,
       image: imageFile,
+      icon,
       order,
     });
 
@@ -109,7 +112,8 @@ export const updateServicePage = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid service page id' });
     }
 
-    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
+    const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files, ['icon']);
+    const icon = req.files?.icon?.[0] || pickField(req.body, ['icon', 'Icon', 'iconName', 'iconClass']);
     const heading = pickField(req.body, ['heading', 'Heading', 'pageHeading', 'pageTitle']);
     const subtitles = pickField(req.body, ['subtitles', 'subtitle', 'subTitles', 'Subtitles']);
     const title = pickField(req.body, ['title', 'Title', 'serviceTitle']);
@@ -126,6 +130,7 @@ export const updateServicePage = async (req, res) => {
       ...(description !== undefined ? { description } : {}),
       ...(faq !== undefined ? { faq } : {}),
       ...(imageFile ? { image: imageFile } : {}),
+      ...(icon !== undefined ? { icon } : {}),
       ...(order !== undefined ? { order } : {}),
     });
 
