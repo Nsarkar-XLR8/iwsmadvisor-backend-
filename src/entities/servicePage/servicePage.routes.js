@@ -23,6 +23,7 @@ router.post(
   multerUpload([
     { name: 'file', maxCount: 1 },
     { name: 'image', maxCount: 1 },
+    { name: 'icon', maxCount: 1 },
   ]),
   createServicePage
 );
@@ -33,6 +34,7 @@ router.put(
   multerUpload([
     { name: 'file', maxCount: 1 },
     { name: 'image', maxCount: 1 },
+    { name: 'icon', maxCount: 1 },
   ]),
   updateServicePage
 );
