@@ -94,7 +94,7 @@ const mapFilePayload = async (file) => {
   };
 };
 
-export const createRealStateService = async ({ title, subtitles, overview, keyCapabilities, image }) => {
+export const createRealStateService = async ({ title, subTitle, overview, overviewTitle, keyCapabilities, image }) => {
   const titleStr = toTrimmedString(title);
   if (!isNonEmptyString(titleStr)) {
     const err = new Error('Title is required');
@@ -102,14 +102,14 @@ export const createRealStateService = async ({ title, subtitles, overview, keyCa
     throw err;
   }
 
-  const subtitlesArr = parseSubtitles(subtitles);
   const keyCapabilitiesArr = normalizeKeyCapabilities(keyCapabilities);
   const imagePayload = await mapFilePayload(image);
 
   return RealState.create({
     title: titleStr,
-    subtitles: subtitlesArr,
+    subTitle: toTrimmedString(subTitle),
     overview: toTrimmedString(overview),
+    overviewTitle: toTrimmedString(overviewTitle),
     keyCapabilities: keyCapabilitiesArr,
     ...(imagePayload ? { image: imagePayload } : {}),
   });
@@ -152,7 +152,7 @@ export const getRealStateByIdService = async (id) => {
 };
 
 export const updateRealStateService = async (id, data) => {
-  const allowed = ['title', 'subtitles', 'overview', 'keyCapabilities', 'image'];
+  const allowed = ['title', 'subTitle', 'overview', 'overviewTitle', 'keyCapabilities', 'image'];
   const updates = {};
 
   for (const field of allowed) {
@@ -161,11 +161,6 @@ export const updateRealStateService = async (id, data) => {
         const err = new Error('title cannot be empty');
         err.code = 'VALIDATION_ERROR';
         throw err;
-      }
-
-      if (field === 'subtitles') {
-        updates.subtitles = parseSubtitles(data[field]);
-        continue;
       }
 
       if (field === 'keyCapabilities') {

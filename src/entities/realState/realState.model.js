@@ -11,7 +11,9 @@ const KeyCapabilitySchema = new mongoose.Schema(
 const RealStateSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, trim: true },
+    subTitle: { type: String, trim: true },
     subtitles: [{ type: String, trim: true }],
+    overviewTitle: { type: String, trim: true },
     overview: { type: String, trim: true },
     keyCapabilities: [KeyCapabilitySchema],
     image: {
