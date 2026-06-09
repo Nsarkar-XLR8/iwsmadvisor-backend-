@@ -94,7 +94,7 @@ const mapFilePayload = async (file) => {
   };
 };
 
-export const createRealStateService = async ({ title, subTitle, overview, overviewTitle, keyCapabilities, image }) => {
+export const createRealStateService = async ({ title, subTitle, overview, overviewTitle, keyCapabilities, image, order }) => {
   const titleStr = toTrimmedString(title);
   if (!isNonEmptyString(titleStr)) {
     const err = new Error('Title is required');
@@ -111,6 +111,7 @@ export const createRealStateService = async ({ title, subTitle, overview, overvi
     overview: toTrimmedString(overview),
     overviewTitle: toTrimmedString(overviewTitle),
     keyCapabilities: keyCapabilitiesArr,
+    order: order !== undefined ? Number(order) : 0,
     ...(imagePayload ? { image: imagePayload } : {}),
   });
 };
@@ -131,7 +132,7 @@ export const getRealStatesService = async ({ page = 1, limit = 10, search }) => 
   const [total, items] = await Promise.all([
     RealState.countDocuments(filter),
     RealState.find(filter)
-      .sort({ createdAt: -1 })
+      .sort({ order: 1, createdAt: -1 })
       .skip((safePage - 1) * safeLimit)
       .limit(safeLimit),
   ]);
@@ -152,7 +153,7 @@ export const getRealStateByIdService = async (id) => {
 };
 
 export const updateRealStateService = async (id, data) => {
-  const allowed = ['title', 'subTitle', 'overview', 'overviewTitle', 'keyCapabilities', 'image'];
+  const allowed = ['title', 'subTitle', 'overview', 'overviewTitle', 'keyCapabilities', 'image', 'order'];
   const updates = {};
 
   for (const field of allowed) {
@@ -173,6 +174,11 @@ export const updateRealStateService = async (id, data) => {
         if (imagePayload) {
           updates.image = imagePayload;
         }
+        continue;
+      }
+
+      if (field === 'order') {
+        updates.order = Number(data[field]);
         continue;
       }
 
