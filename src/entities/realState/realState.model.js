@@ -15,6 +15,7 @@ const RealStateSchema = new mongoose.Schema(
     subtitles: [{ type: String, trim: true }],
     overviewTitle: { type: String, trim: true },
     overview: { type: String, trim: true },
+    order: { type: Number, default: 0 },
     keyCapabilities: [KeyCapabilitySchema],
     image: {
       filename: { type: String },
