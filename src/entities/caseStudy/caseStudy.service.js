@@ -6,16 +6,30 @@ const toTrimmedString = (val) => {
   return String(val).trim();
 };
 const isNonEmptyString = (val) => toTrimmedString(val).length > 0;
-const toStringArray = (val) => {
-  if (Array.isArray(val)) {
-    return val.map(toTrimmedString).filter((item) => item.length > 0);
+
+const hiddenResponseFields = [
+  'technologiesUsed',
+  'resultImpact',
+  'caseExperience',
+  'clientName',
+  'companyName',
+  'client',
+  'duration',
+  'teamSize',
+];
+
+export const serializeCaseStudy = (caseStudy) => {
+  if (!caseStudy) return caseStudy;
+  const payload =
+    typeof caseStudy.toObject === 'function'
+      ? caseStudy.toObject()
+      : { ...caseStudy };
+
+  for (const field of hiddenResponseFields) {
+    delete payload[field];
   }
-  const str = toTrimmedString(val);
-  if (!str) return [];
-  return str
-    .split(',')
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
+
+  return payload;
 };
 
 const parsePagination = (page, limit) => {
@@ -51,16 +65,8 @@ export const createCaseStudyService = async ({
   title,
   description,
   subtitle,
-  client,
-  duration,
-  teamSize,
   challenge,
   solution,
-  technologiesUsed,
-  resultImpact,
-  caseExperience,
-  clientName,
-  companyName,
   benefit,
   customer,
   image,
@@ -75,26 +81,19 @@ export const createCaseStudyService = async ({
   }
 
   const imagePayload = await mapFilePayload(image);
-  const technologies = toStringArray(technologiesUsed);
 
-  return CaseStudy.create({
+  const caseStudy = await CaseStudy.create({
     title: titleStr,
     description: descriptionStr,
     subtitle: toTrimmedString(subtitle),
-    client: toTrimmedString(client),
-    duration: toTrimmedString(duration),
-    teamSize: toTrimmedString(teamSize),
     challenge: toTrimmedString(challenge),
     solution: toTrimmedString(solution),
-    technologiesUsed: technologies,
-    resultImpact: toTrimmedString(resultImpact),
-    caseExperience: toTrimmedString(caseExperience),
-    clientName: toTrimmedString(clientName),
-    companyName: toTrimmedString(companyName),
     benefit: toTrimmedString(benefit),
     customer: toTrimmedString(customer),
     ...(imagePayload ? { image: imagePayload } : {}),
   });
+
+  return serializeCaseStudy(caseStudy);
 };
 
 export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) => {
@@ -118,7 +117,7 @@ export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) =>
   ]);
 
   return {
-    data: items,
+    data: items.map(serializeCaseStudy),
     pagination: {
       page: safePage,
       limit: safeLimit,
@@ -129,7 +128,8 @@ export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) =>
 };
 
 export const getCaseStudyByIdService = async (id) => {
-  return CaseStudy.findById(id);
+  const caseStudy = await CaseStudy.findById(id);
+  return serializeCaseStudy(caseStudy);
 };
 
 export const updateCaseStudyService = async (id, data) => {
@@ -137,16 +137,8 @@ export const updateCaseStudyService = async (id, data) => {
     'title',
     'description',
     'subtitle',
-    'client',
-    'duration',
-    'teamSize',
     'challenge',
     'solution',
-    'technologiesUsed',
-    'resultImpact',
-    'caseExperience',
-    'clientName',
-    'companyName',
     'benefit',
     'customer',
     'image',
@@ -169,18 +161,13 @@ export const updateCaseStudyService = async (id, data) => {
         continue;
       }
 
-      if (field === 'technologiesUsed') {
-        updates[field] = toStringArray(data[field]);
-        continue;
-      }
-
       updates[field] = toTrimmedString(data[field]);
     }
   }
 
   const updated = await CaseStudy.findByIdAndUpdate(id, { $set: updates }, { new: true });
   if (!updated) return { notFound: true };
-  return { caseStudy: updated };
+  return { caseStudy: serializeCaseStudy(updated) };
 };
 
 export const deleteCaseStudyService = async (id) => {
