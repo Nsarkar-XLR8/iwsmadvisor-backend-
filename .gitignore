@@ -3,7 +3,7 @@
 /build
 /dist
 /uploads
-
+.env
 
 
 config.bat
