@@ -55,6 +55,17 @@ export const serializeCaseStudy = (caseStudy) => {
   }
 
   return payload;
+
+const toStringArray = (val) => {
+  if (Array.isArray(val)) {
+    return val.map(toTrimmedString).filter((item) => item.length > 0);
+  }
+  const str = toTrimmedString(val);
+  if (!str) return [];
+  return str
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
 };
 
 const parsePagination = (page, limit) => {
@@ -92,6 +103,16 @@ export const createCaseStudyService = async ({
   subtitle,
   challenge,
   solution,
+  client,
+  duration,
+  teamSize,
+  challenge,
+  solution,
+  technologiesUsed,
+  resultImpact,
+  caseExperience,
+  clientName,
+  companyName,
   benefit,
   customer,
   image,
@@ -119,6 +140,27 @@ export const createCaseStudyService = async ({
   });
 
   return serializeCaseStudy(caseStudy);
+
+  const technologies = toStringArray(technologiesUsed);
+
+  return CaseStudy.create({
+    title: titleStr,
+    description: descriptionStr,
+    subtitle: toTrimmedString(subtitle),
+    client: toTrimmedString(client),
+    duration: toTrimmedString(duration),
+    teamSize: toTrimmedString(teamSize),
+    challenge: toTrimmedString(challenge),
+    solution: toTrimmedString(solution),
+    technologiesUsed: technologies,
+    resultImpact: toTrimmedString(resultImpact),
+    caseExperience: toTrimmedString(caseExperience),
+    clientName: toTrimmedString(clientName),
+    companyName: toTrimmedString(companyName),
+    benefit: toTrimmedString(benefit),
+    customer: toTrimmedString(customer),
+    ...(imagePayload ? { image: imagePayload } : {}),
+  });
 };
 
 export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) => {
@@ -143,6 +185,8 @@ export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) =>
 
   return {
     data: items.map(serializeCaseStudy),
+
+    data: items,
     pagination: {
       page: safePage,
       limit: safeLimit,
@@ -155,6 +199,7 @@ export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) =>
 export const getCaseStudyByIdService = async (id) => {
   const caseStudy = await CaseStudy.findById(id);
   return serializeCaseStudy(caseStudy);
+  return CaseStudy.findById(id);
 };
 
 export const updateCaseStudyService = async (id, data) => {
@@ -164,6 +209,16 @@ export const updateCaseStudyService = async (id, data) => {
     'subtitle',
     'challenge',
     'solution',
+    'client',
+    'duration',
+    'teamSize',
+    'challenge',
+    'solution',
+    'technologiesUsed',
+    'resultImpact',
+    'caseExperience',
+    'clientName',
+    'companyName',
     'benefit',
     'customer',
     'image',
@@ -189,12 +244,19 @@ export const updateCaseStudyService = async (id, data) => {
       updates[field] = ['customer', 'challenge', 'solution', 'benefit'].includes(field)
         ? toPlainText(data[field])
         : toTrimmedString(data[field]);
+      if (field === 'technologiesUsed') {
+        updates[field] = toStringArray(data[field]);
+        continue;
+      }
+
+      updates[field] = toTrimmedString(data[field]);
     }
   }
 
   const updated = await CaseStudy.findByIdAndUpdate(id, { $set: updates }, { new: true });
   if (!updated) return { notFound: true };
   return { caseStudy: serializeCaseStudy(updated) };
+  return { caseStudy: updated };
 };
 
 export const deleteCaseStudyService = async (id) => {
