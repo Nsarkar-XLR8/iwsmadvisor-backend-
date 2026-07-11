@@ -49,6 +49,14 @@ export const createCaseStudy = async (req, res) => {
     const solution = pickField(req.body, ['solution', 'Solution']);
     const benefit = pickField(req.body, ['benefit', 'Benefit']);
     const customer = pickField(req.body, ['customer', 'Customer']);
+    const client = pickField(req.body, ['client', 'Client']);
+    const duration = pickField(req.body, ['duration', 'Duration']);
+    const teamSize = pickField(req.body, ['teamSize', 'team_size', 'TeamSize', 'Team Size']);
+    const technologiesUsed = pickField(req.body, ['technologiesUsed', 'technologies', 'TechnologiesUsed', 'Technologies']);
+    const resultImpact = pickField(req.body, ['resultImpact', 'result', 'ResultImpact', 'Result']);
+    const caseExperience = pickField(req.body, ['caseExperience', 'experience', 'CaseExperience', 'Experience']);
+    const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
+    const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
 
     const caseStudy = await createCaseStudyService({
       title,
@@ -64,6 +72,14 @@ export const createCaseStudy = async (req, res) => {
       solution,
       benefit,
       customer,
+      client,
+      duration,
+      teamSize,
+      technologiesUsed,
+      resultImpact,
+      caseExperience,
+      clientName,
+      companyName,
       image: imageFile,
     });
     return res.status(201).json({
@@ -144,6 +160,9 @@ export const updateCaseStudy = async (req, res) => {
     const solution = pickField(req.body, ['solution', 'Solution']);
     const benefit = pickField(req.body, ['benefit', 'Benefit']);
     const customer = pickField(req.body, ['customer', 'Customer']);
+    const client = pickField(req.body, ['client', 'Client']);
+    const duration = pickField(req.body, ['duration', 'Duration']);
+    const teamSize = pickField(req.body, ['teamSize', 'team_size', 'TeamSize', 'Team Size']);
 
     const result = await updateCaseStudyService(id, {
       ...(title !== undefined ? { title } : {}),
@@ -159,6 +178,9 @@ export const updateCaseStudy = async (req, res) => {
       ...(solution !== undefined ? { solution } : {}),
       ...(benefit !== undefined ? { benefit } : {}),
       ...(customer !== undefined ? { customer } : {}),
+      ...(client !== undefined ? { client } : {}),
+      ...(duration !== undefined ? { duration } : {}),
+      ...(teamSize !== undefined ? { teamSize } : {}),
       ...(imageFile ? { image: imageFile } : {}),
     });
 

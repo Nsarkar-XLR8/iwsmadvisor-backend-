@@ -6,6 +6,7 @@ const toTrimmedString = (val) => {
   return String(val).trim();
 };
 const isNonEmptyString = (val) => toTrimmedString(val).length > 0;
+
 const decodeHtmlEntities = (value) =>
   value
     .replace(/&nbsp;/gi, ' ')
@@ -25,6 +26,25 @@ const toPlainText = (val) =>
     .map((line) => line.replace(/\s+/g, ' ').trim())
     .filter(Boolean)
     .join('\n');
+
+const toStringArray = (val) => {
+  if (Array.isArray(val)) {
+    return val.map(toTrimmedString).filter((item) => item.length > 0);
+  }
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val);
+      if (Array.isArray(parsed)) {
+        return parsed.map(toTrimmedString).filter((item) => item.length > 0);
+      }
+    } catch (_) {
+      // fall through
+    }
+    const str = toTrimmedString(val);
+    return str ? [str] : [];
+  }
+  return [];
+};
 
 const hiddenResponseFields = [
   'technologiesUsed',
@@ -112,6 +132,14 @@ export const createCaseStudyService = async ({
   solution,
   benefit,
   customer,
+  client,
+  duration,
+  teamSize,
+  technologiesUsed,
+  resultImpact,
+  caseExperience,
+  clientName,
+  companyName,
   image,
 }) => {
   const titleStr = toTrimmedString(title);
@@ -124,15 +152,24 @@ export const createCaseStudyService = async ({
   }
 
   const imagePayload = await mapFilePayload(image);
+  const technologies = toStringArray(technologiesUsed);
 
   const caseStudy = await CaseStudy.create({
     title: titleStr,
     description: descriptionStr,
     subtitle: toTrimmedString(subtitle),
-    challenge: toPlainText(challenge),
-    solution: toPlainText(solution),
-    benefit: toPlainText(benefit),
-    customer: toPlainText(customer),
+    challenge: toPlainText(challenge || ''),
+    solution: toPlainText(solution || ''),
+    benefit: toPlainText(benefit || ''),
+    customer: toPlainText(customer || ''),
+    ...(client !== undefined ? { client: toTrimmedString(client) } : {}),
+    ...(duration !== undefined ? { duration: toTrimmedString(duration) } : {}),
+    ...(teamSize !== undefined ? { teamSize: toTrimmedString(teamSize) } : {}),
+    ...(technologies.length > 0 ? { technologiesUsed: technologies } : {}),
+    ...(resultImpact !== undefined ? { resultImpact: toTrimmedString(resultImpact) } : {}),
+    ...(caseExperience !== undefined ? { caseExperience: toTrimmedString(caseExperience) } : {}),
+    ...(clientName !== undefined ? { clientName: toTrimmedString(clientName) } : {}),
+    ...(companyName !== undefined ? { companyName: toTrimmedString(companyName) } : {}),
     ...(imagePayload ? { image: imagePayload } : {}),
   });
 
@@ -208,6 +245,14 @@ export const updateCaseStudyService = async (id, data) => {
     'solution',
     'benefit',
     'customer',
+    'client',
+    'duration',
+    'teamSize',
+    'technologiesUsed',
+    'resultImpact',
+    'caseExperience',
+    'clientName',
+    'companyName',
     'image',
   ];
   const updates = {};
@@ -225,6 +270,11 @@ export const updateCaseStudyService = async (id, data) => {
         if (imagePayload) {
           updates[field] = imagePayload;
         }
+        continue;
+      }
+
+      if (field === 'technologiesUsed') {
+        updates[field] = toStringArray(data[field]);
         continue;
       }
 

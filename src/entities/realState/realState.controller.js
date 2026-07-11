@@ -16,13 +16,6 @@ const firstAvailableFile = (files) => {
   return undefined;
 };
 
-const pickField = (body, keys) => {
-  for (const key of keys) {
-    if (body?.[key] !== undefined) return body[key];
-  }
-  return undefined;
-};
-
 // Admin: create real state (multipart/form-data)
 export const createRealState = async (req, res) => {
   try {
