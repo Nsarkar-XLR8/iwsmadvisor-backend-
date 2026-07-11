@@ -1,3 +1,12 @@
+
+import { ServicePageTitle } from "./servicePageTitle.model.js";
+
+export const createTitle = async (data) => await ServicePageTitle.create(data);
+export const getAllTitles = async () => await ServicePageTitle.find().sort({ order: 1, createdAt: -1 });
+export const getSingleTitle = async (id) => await ServicePageTitle.findById(id);
+export const updateTitle = async (id, data) =>
+  await ServicePageTitle.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+
 import { ServicePageTitle } from "./servicePageTitle.model.js";
 
 export const createTitle = async (data) => await ServicePageTitle.create(data);
@@ -5,4 +14,5 @@ export const getAllTitles = async () => await ServicePageTitle.find().sort({ cre
 export const getSingleTitle = async (id) => await ServicePageTitle.findById(id);
 export const updateTitle = async (id, data) =>
   await ServicePageTitle.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+
 export const deleteTitle = async (id) => await ServicePageTitle.findByIdAndDelete(id);
