@@ -1,6 +1,3 @@
-// import csurf from 'csurf';
-// app.use(csurf({ cookie: true }));
-
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -8,22 +5,20 @@ import xssClean from 'xss-clean';
 import mongoSanitize from 'express-mongo-sanitize';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
-import path from "path";
-import { fileURLToPath } from "url";
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import logger from './core/config/logger.js';
 import errorHandler from './core/middlewares/errorMiddleware.js';
 import notFound from './core/middlewares/notFound.js';
-import { globalLimiter } from './lib/limit.js';
 import appRouter from './core/app/appRouter.js';
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Set up security middleware
+// Security middleware
 app.use(helmet());
 app.use(
   cors({
@@ -32,46 +27,36 @@ app.use(
       callback(null, origin);
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
-// app.use(globalLimiter);
-// Set up body parsing middleware
+
+// Body parsing
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use(cookieParser());
 
-// Set up logging middleware
+// Logging
 app.use(morgan('combined'));
 
+// Sanitisation
 app.use(xssClean());
 app.use(mongoSanitize());
 
-// Set up logging middleware
-app.use(morgan('combined'));
+// Static files
+const uploadPath = path.resolve(__dirname, '../uploads');
+app.use('/uploads', express.static(uploadPath));
 
-app.use(xssClean());
-app.use(mongoSanitize());
-
-
-
-
-// Set up static files middleware
-const uploadPath = path.resolve(__dirname, "../uploads");
-app.use("/uploads", express.static(uploadPath));
-
-// Set up API routes
+// API routes
 app.use('/api', appRouter);
 
-// Set up 404 error middleware
+// 404 handler
 app.use(notFound);
 
-// Set up error handling middleware
+// Error handler
 app.use(errorHandler);
 
 logger.info('Middleware stack initialized');
 
 export { app };
-
-
