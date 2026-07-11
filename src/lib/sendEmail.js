@@ -137,6 +137,7 @@ const sendEmail = async ({ to, subject, html, attachments = [] }) => {
     await postSendMail(token, message);
     return { success: true };
   } catch (error) {
+    // 401 Unauthorized — token may have been revoked; clear cache and retry once
     if (error.response?.status === 401) {
       try {
         cachedToken = null;
@@ -153,14 +154,13 @@ const sendEmail = async ({ to, subject, html, attachments = [] }) => {
       }
     }
 
+    // 429 Too Many Requests — honour the retry-after header
     if (error.response?.status === 429) {
       const retryAfter = parseInt(
         error.response.headers["retry-after"] || "30",
         10
       );
-      console.warn(
-        `Graph API throttled. Retrying after ${retryAfter}s...`
-      );
+      console.warn(`Graph API throttled. Retrying after ${retryAfter}s...`);
       await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
 
       try {
@@ -171,10 +171,7 @@ const sendEmail = async ({ to, subject, html, attachments = [] }) => {
         await postSendMail(token, message);
         return { success: true };
       } catch (retryError) {
-        console.error(
-          "Email send after throttle failed:",
-          retryError.message
-        );
+        console.error("Email send after throttle failed:", retryError.message);
         return { success: false, error: retryError.message };
       }
     }
