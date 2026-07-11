@@ -189,9 +189,11 @@ export const createRealState = async (req, res) => {
 
     const realState = await createRealStateService({
       title,
-      subtitles,
+      subTitle,
       overview,
+      overviewTitle,
       keyCapabilities,
+      order,
       image: imageFile,
     });
 
@@ -260,16 +262,15 @@ export const updateRealState = async (req, res) => {
     }
 
     const imageFile = req.files?.file?.[0] || req.files?.image?.[0] || firstAvailableFile(req.files);
-    const title = pickField(req.body, ['title', 'Title', 'realStateTitle', 'RealStateTitle']);
-    const subtitles = pickField(req.body, ['subtitles', 'subtitle', 'subTitles', 'Subtitles']);
-    const overview = pickField(req.body, ['overview', 'Overview', 'description', 'Description']);
-    const keyCapabilities = pickField(req.body, ['keyCapabilities', 'capabilities', 'KeyCapabilities', 'keyCapability']);
+    const { title, subTitle, overview, overviewTitle, keyCapabilities, order } = req.body;
 
     const result = await updateRealStateService(id, {
       ...(title !== undefined ? { title } : {}),
-      ...(subtitles !== undefined ? { subtitles } : {}),
+      ...(subTitle !== undefined ? { subTitle } : {}),
       ...(overview !== undefined ? { overview } : {}),
+      ...(overviewTitle !== undefined ? { overviewTitle } : {}),
       ...(keyCapabilities !== undefined ? { keyCapabilities } : {}),
+      ...(order !== undefined ? { order } : {}),
       ...(imageFile ? { image: imageFile } : {}),
     });
 

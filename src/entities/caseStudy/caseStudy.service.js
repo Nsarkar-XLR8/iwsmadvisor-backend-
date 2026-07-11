@@ -60,12 +60,14 @@ const toStringArray = (val) => {
   if (Array.isArray(val)) {
     return val.map(toTrimmedString).filter((item) => item.length > 0);
   }
-  const str = toTrimmedString(val);
-  if (!str) return [];
-  return str
-    .split(',')
-    .map((item) => item.trim())
-    .filter((item) => item.length > 0);
+
+  for (const field of ['customer', 'challenge', 'solution', 'benefit']) {
+    if (payload[field] !== undefined) {
+      payload[field] = toPlainText(payload[field]);
+    }
+  }
+
+  return payload;
 };
 
 const parsePagination = (page, limit) => {
@@ -108,11 +110,6 @@ export const createCaseStudyService = async ({
   teamSize,
   challenge,
   solution,
-  technologiesUsed,
-  resultImpact,
-  caseExperience,
-  clientName,
-  companyName,
   benefit,
   customer,
   image,
@@ -143,24 +140,18 @@ export const createCaseStudyService = async ({
 
   const technologies = toStringArray(technologiesUsed);
 
-  return CaseStudy.create({
+  const caseStudy = await CaseStudy.create({
     title: titleStr,
     description: descriptionStr,
     subtitle: toTrimmedString(subtitle),
-    client: toTrimmedString(client),
-    duration: toTrimmedString(duration),
-    teamSize: toTrimmedString(teamSize),
-    challenge: toTrimmedString(challenge),
-    solution: toTrimmedString(solution),
-    technologiesUsed: technologies,
-    resultImpact: toTrimmedString(resultImpact),
-    caseExperience: toTrimmedString(caseExperience),
-    clientName: toTrimmedString(clientName),
-    companyName: toTrimmedString(companyName),
-    benefit: toTrimmedString(benefit),
-    customer: toTrimmedString(customer),
+    challenge: toPlainText(challenge),
+    solution: toPlainText(solution),
+    benefit: toPlainText(benefit),
+    customer: toPlainText(customer),
     ...(imagePayload ? { image: imagePayload } : {}),
   });
+
+  return serializeCaseStudy(caseStudy);
 };
 
 export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) => {
@@ -187,6 +178,7 @@ export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) =>
     data: items.map(serializeCaseStudy),
 
     data: items,
+
     pagination: {
       page: safePage,
       limit: safeLimit,
@@ -214,11 +206,6 @@ export const updateCaseStudyService = async (id, data) => {
     'teamSize',
     'challenge',
     'solution',
-    'technologiesUsed',
-    'resultImpact',
-    'caseExperience',
-    'clientName',
-    'companyName',
     'benefit',
     'customer',
     'image',
@@ -250,6 +237,7 @@ export const updateCaseStudyService = async (id, data) => {
       }
 
       updates[field] = toTrimmedString(data[field]);
+
     }
   }
 

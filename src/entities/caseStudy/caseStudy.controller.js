@@ -45,6 +45,8 @@ export const createCaseStudy = async (req, res) => {
     const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
     const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
 
+    const challenge = pickField(req.body, ['challenge', 'Challenge']);
+    const solution = pickField(req.body, ['solution', 'Solution']);
     const benefit = pickField(req.body, ['benefit', 'Benefit']);
     const customer = pickField(req.body, ['customer', 'Customer']);
 
@@ -60,11 +62,6 @@ export const createCaseStudy = async (req, res) => {
       teamSize,
       challenge,
       solution,
-      technologiesUsed,
-      resultImpact,
-      caseExperience,
-      clientName,
-      companyName,
       benefit,
       customer,
       image: imageFile,
@@ -145,11 +142,6 @@ export const updateCaseStudy = async (req, res) => {
     const teamSize = pickField(req.body, ['teamSize', 'team_size', 'TeamSize', 'Team Size']);
     const challenge = pickField(req.body, ['challenge', 'Challenge']);
     const solution = pickField(req.body, ['solution', 'Solution']);
-    const technologiesUsed = pickField(req.body, ['technologiesUsed', 'technologies', 'TechnologiesUsed', 'Technologies']);
-    const resultImpact = pickField(req.body, ['resultImpact', 'result', 'ResultImpact', 'Result']);
-    const caseExperience = pickField(req.body, ['caseExperience', 'experience', 'CaseExperience', 'Experience']);
-    const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
-    const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
     const benefit = pickField(req.body, ['benefit', 'Benefit']);
     const customer = pickField(req.body, ['customer', 'Customer']);
 
@@ -165,11 +157,6 @@ export const updateCaseStudy = async (req, res) => {
       ...(teamSize !== undefined ? { teamSize } : {}),
       ...(challenge !== undefined ? { challenge } : {}),
       ...(solution !== undefined ? { solution } : {}),
-      ...(technologiesUsed !== undefined ? { technologiesUsed } : {}),
-      ...(resultImpact !== undefined ? { resultImpact } : {}),
-      ...(caseExperience !== undefined ? { caseExperience } : {}),
-      ...(clientName !== undefined ? { clientName } : {}),
-      ...(companyName !== undefined ? { companyName } : {}),
       ...(benefit !== undefined ? { benefit } : {}),
       ...(customer !== undefined ? { customer } : {}),
       ...(imageFile ? { image: imageFile } : {}),
