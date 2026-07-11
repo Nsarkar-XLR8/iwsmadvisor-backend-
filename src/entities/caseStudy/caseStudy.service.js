@@ -55,6 +55,19 @@ export const serializeCaseStudy = (caseStudy) => {
   }
 
   return payload;
+
+const toStringArray = (val) => {
+  if (Array.isArray(val)) {
+    return val.map(toTrimmedString).filter((item) => item.length > 0);
+  }
+
+  for (const field of ['customer', 'challenge', 'solution', 'benefit']) {
+    if (payload[field] !== undefined) {
+      payload[field] = toPlainText(payload[field]);
+    }
+  }
+
+  return payload;
 };
 
 const parsePagination = (page, limit) => {
@@ -92,6 +105,11 @@ export const createCaseStudyService = async ({
   subtitle,
   challenge,
   solution,
+  client,
+  duration,
+  teamSize,
+  challenge,
+  solution,
   benefit,
   customer,
   image,
@@ -106,6 +124,21 @@ export const createCaseStudyService = async ({
   }
 
   const imagePayload = await mapFilePayload(image);
+
+  const caseStudy = await CaseStudy.create({
+    title: titleStr,
+    description: descriptionStr,
+    subtitle: toTrimmedString(subtitle),
+    challenge: toPlainText(challenge),
+    solution: toPlainText(solution),
+    benefit: toPlainText(benefit),
+    customer: toPlainText(customer),
+    ...(imagePayload ? { image: imagePayload } : {}),
+  });
+
+  return serializeCaseStudy(caseStudy);
+
+  const technologies = toStringArray(technologiesUsed);
 
   const caseStudy = await CaseStudy.create({
     title: titleStr,
@@ -143,6 +176,9 @@ export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) =>
 
   return {
     data: items.map(serializeCaseStudy),
+
+    data: items,
+
     pagination: {
       page: safePage,
       limit: safeLimit,
@@ -155,6 +191,7 @@ export const getCaseStudiesService = async ({ page = 1, limit = 10, search }) =>
 export const getCaseStudyByIdService = async (id) => {
   const caseStudy = await CaseStudy.findById(id);
   return serializeCaseStudy(caseStudy);
+  return CaseStudy.findById(id);
 };
 
 export const updateCaseStudyService = async (id, data) => {
@@ -162,6 +199,11 @@ export const updateCaseStudyService = async (id, data) => {
     'title',
     'description',
     'subtitle',
+    'challenge',
+    'solution',
+    'client',
+    'duration',
+    'teamSize',
     'challenge',
     'solution',
     'benefit',
@@ -189,12 +231,20 @@ export const updateCaseStudyService = async (id, data) => {
       updates[field] = ['customer', 'challenge', 'solution', 'benefit'].includes(field)
         ? toPlainText(data[field])
         : toTrimmedString(data[field]);
+      if (field === 'technologiesUsed') {
+        updates[field] = toStringArray(data[field]);
+        continue;
+      }
+
+      updates[field] = toTrimmedString(data[field]);
+
     }
   }
 
   const updated = await CaseStudy.findByIdAndUpdate(id, { $set: updates }, { new: true });
   if (!updated) return { notFound: true };
   return { caseStudy: serializeCaseStudy(updated) };
+  return { caseStudy: updated };
 };
 
 export const deleteCaseStudyService = async (id) => {

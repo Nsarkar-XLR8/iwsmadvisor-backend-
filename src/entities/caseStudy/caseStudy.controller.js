@@ -30,6 +30,21 @@ export const createCaseStudy = async (req, res) => {
     const title = pickField(req.body, ['title', 'Title', 'title ', 'Title ']);
     const description = pickField(req.body, ['description', 'Description', 'description ', 'Description ']);
     const subtitle = pickField(req.body, ['subtitle', 'subTitle', 'Subtitle']);
+
+    const challenge = pickField(req.body, ['challenge', 'Challenge']);
+    const solution = pickField(req.body, ['solution', 'Solution']);
+
+    const client = pickField(req.body, ['client', 'Client']);
+    const duration = pickField(req.body, ['duration', 'Duration']);
+    const teamSize = pickField(req.body, ['teamSize', 'team_size', 'TeamSize', 'Team Size']);
+    const challenge = pickField(req.body, ['challenge', 'Challenge']);
+    const solution = pickField(req.body, ['solution', 'Solution']);
+    const technologiesUsed = pickField(req.body, ['technologiesUsed', 'technologies', 'TechnologiesUsed', 'Technologies']);
+    const resultImpact = pickField(req.body, ['resultImpact', 'result', 'ResultImpact', 'Result']);
+    const caseExperience = pickField(req.body, ['caseExperience', 'experience', 'CaseExperience', 'Experience']);
+    const clientName = pickField(req.body, ['clientName', 'client_name', 'ClientName']);
+    const companyName = pickField(req.body, ['companyName', 'company_name', 'CompanyName']);
+
     const challenge = pickField(req.body, ['challenge', 'Challenge']);
     const solution = pickField(req.body, ['solution', 'Solution']);
     const benefit = pickField(req.body, ['benefit', 'Benefit']);
@@ -39,6 +54,12 @@ export const createCaseStudy = async (req, res) => {
       title,
       description,
       subtitle,
+      challenge,
+      solution,
+
+      client,
+      duration,
+      teamSize,
       challenge,
       solution,
       benefit,
@@ -115,6 +136,12 @@ export const updateCaseStudy = async (req, res) => {
     const subtitle = pickField(req.body, ['subtitle', 'subTitle', 'Subtitle']);
     const challenge = pickField(req.body, ['challenge', 'Challenge']);
     const solution = pickField(req.body, ['solution', 'Solution']);
+
+    const client = pickField(req.body, ['client', 'Client']);
+    const duration = pickField(req.body, ['duration', 'Duration']);
+    const teamSize = pickField(req.body, ['teamSize', 'team_size', 'TeamSize', 'Team Size']);
+    const challenge = pickField(req.body, ['challenge', 'Challenge']);
+    const solution = pickField(req.body, ['solution', 'Solution']);
     const benefit = pickField(req.body, ['benefit', 'Benefit']);
     const customer = pickField(req.body, ['customer', 'Customer']);
 
@@ -122,6 +149,12 @@ export const updateCaseStudy = async (req, res) => {
       ...(title !== undefined ? { title } : {}),
       ...(description !== undefined ? { description } : {}),
       ...(subtitle !== undefined ? { subtitle } : {}),
+      ...(challenge !== undefined ? { challenge } : {}),
+      ...(solution !== undefined ? { solution } : {}),
+
+      ...(client !== undefined ? { client } : {}),
+      ...(duration !== undefined ? { duration } : {}),
+      ...(teamSize !== undefined ? { teamSize } : {}),
       ...(challenge !== undefined ? { challenge } : {}),
       ...(solution !== undefined ? { solution } : {}),
       ...(benefit !== undefined ? { benefit } : {}),
