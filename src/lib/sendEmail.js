@@ -98,6 +98,23 @@ const postSendMail = async (token, message) => {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
+
+  emailHost,
+  emailPort,
+  emailAddress,
+  emailPass,
+  emailFrom,
+} from "../core/config/config.js"; 
+
+const sendEmail = async ({ to, subject, html, attachments = [] }) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: emailHost,
+      port: emailPort,
+      secure: false,
+      auth: {
+        user: emailAddress,
+        pass: emailPass,
       },
     }
   );
@@ -108,6 +125,14 @@ const sendEmail = async ({ to, subject, html, attachments = [] }) => {
     const token = await getAccessToken();
     const graphAttachments = await processAttachments(attachments);
     const message = buildMessage(to, subject, html, graphAttachments);
+
+    const mailOptions = {
+      from: emailFrom,
+      to,
+      subject,
+      html,
+      attachments: Array.isArray(attachments) ? attachments : [],
+    };
 
     await postSendMail(token, message);
     return { success: true };
