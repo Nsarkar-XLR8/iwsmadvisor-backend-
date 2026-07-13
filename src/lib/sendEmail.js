@@ -248,6 +248,7 @@ const runGraphWithRetry = async (payload) => {
   try {
     await sendViaGraph(payload);
   } catch (error) {
+    // 401 Unauthorized — token may have been revoked; clear cache and retry once
     if (error.response?.status === 401) {
       cachedToken = null;
       tokenExpiresAt = 0;
@@ -255,6 +256,7 @@ const runGraphWithRetry = async (payload) => {
       return;
     }
 
+    // 429 Too Many Requests — honour the retry-after header
     if (error.response?.status === 429) {
       const retryAfter = Math.min(
         parseInt(error.response.headers['retry-after'] || '30', 10),
