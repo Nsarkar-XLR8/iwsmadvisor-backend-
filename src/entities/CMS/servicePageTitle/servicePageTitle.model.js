@@ -1,16 +1,4 @@
-
-import mongoose from "mongoose";
-
-const titleSchema = new mongoose.Schema(
-  {
-    title: { type: String, required: true, trim: true },
-    order: { type: Number, default: 0 }
-  },
-  { timestamps: true }
-);
-
-
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const titleSchema = new mongoose.Schema(
   {
@@ -20,5 +8,6 @@ const titleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-
-export const ServicePageTitle = mongoose.model("ServicePageTitle", titleSchema);
+export const ServicePageTitle =
+  mongoose.models.ServicePageTitle ||
+  mongoose.model('ServicePageTitle', titleSchema);
