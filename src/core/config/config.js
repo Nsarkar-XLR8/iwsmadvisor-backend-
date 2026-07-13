@@ -23,15 +23,11 @@ export const emailExpires = Number.parseInt(
 export const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_ADDRESS;
 export const adminMail = process.env.ADMIN_EMAIL;
 export const emailTo = process.env.EMAIL_TO;
-export const contactEmail =
-  process.env.CONTACT_EMAIL ||
-  'info@iwmsadvisors.com';
-export const careersEmail =
-  process.env.CAREERS_EMAIL || 'careers@iwmsadvisors.com';
+export const contactEmail = process.env.CONTACT_EMAIL;
+export const careersEmail = process.env.CAREERS_EMAIL;
 export const subscriptionNotificationEmail =
   process.env.SUBSCRIPTION_NOTIFICATION_EMAIL ||
-  process.env.CONTACT_EMAIL ||
-  'info@iwmsadvisors.com';
+  process.env.CONTACT_EMAIL;
 
 // Microsoft Graph. Supports both the existing MS_* names and MS_GRAPH_* names.
 export const msGraphTenantId =
