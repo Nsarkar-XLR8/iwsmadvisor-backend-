@@ -15,35 +15,42 @@ export const refreshTokenExpires = process.env.REFRESH_TOKEN_EXPIRES || '10d';
 export const refreshTokenSecrete = process.env.REFRESH_TOKEN_SECRET;
 export const salt = process.env.SALT;
 
-// EMAIL config
+// Email config
 export const emailExpires = Number.parseInt(
-  process.env.EMAIL_EXPIRES || 15 * 60 * 1000
+  process.env.EMAIL_EXPIRES || 15 * 60 * 1000,
+  10
 );
-export const emailFrom = process.env.EMAIL_FROM;
-
-
-export const msGraphTenantId = process.env.MS_GRAPH_TENANT_ID;
-export const msGraphClientId = process.env.MS_GRAPH_CLIENT_ID;
-export const msGraphClientSecret = process.env.MS_GRAPH_CLIENT_SECRET;
-export const msGraphSenderEmail = process.env.MS_GRAPH_SENDER_EMAIL;
-export const emailFrom = process.env.MS_GRAPH_SENDER_EMAIL;
-
-export const emailHost = process.env.EMAIL_HOST;
-export const emailPort = process.env.EMAIL_PORT;
-export const emailAddress = process.env.EMAIL_ADDRESS;
-export const emailPass = process.env.EMAIL_PASS;
-export const emailFrom = process.env.EMAIL_FROM;
-
+export const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_ADDRESS;
 export const adminMail = process.env.ADMIN_EMAIL;
 export const emailTo = process.env.EMAIL_TO;
+export const contactEmail =
+  process.env.CONTACT_EMAIL ||
+  process.env.EMAIL_TO ||
+  process.env.ADMIN_EMAIL ||
+  emailFrom;
+export const careersEmail =
+  process.env.CAREERS_EMAIL || process.env.ADMIN_EMAIL || emailFrom;
 
-// Microsoft Graph (OAuth2 client_credentials) — env var names match .env exactly
-export const msGraphTenantId = process.env.MS_TENANT_ID;
-export const msGraphClientId = process.env.MS_CLIENT_ID;
-export const msGraphClientSecret = process.env.MS_CLIENT_SECRET;
-// Sender email: use the dedicated MS_GRAPH_SENDER_EMAIL if set, otherwise fall back to EMAIL_FROM
+// Microsoft Graph. Supports both the existing MS_* names and MS_GRAPH_* names.
+export const msGraphTenantId =
+  process.env.MS_TENANT_ID || process.env.MS_GRAPH_TENANT_ID;
+export const msGraphClientId =
+  process.env.MS_CLIENT_ID || process.env.MS_GRAPH_CLIENT_ID;
+export const msGraphClientSecret =
+  process.env.MS_CLIENT_SECRET || process.env.MS_GRAPH_CLIENT_SECRET;
 export const msGraphSenderEmail =
-  process.env.MS_GRAPH_SENDER_EMAIL || process.env.EMAIL_FROM;
+  process.env.MS_GRAPH_SENDER_EMAIL || emailFrom;
+
+// SMTP fallback. Supports both the existing EMAIL_* names and SMTP_* names.
+export const smtpHost = process.env.SMTP_HOST || process.env.EMAIL_HOST;
+export const smtpPort = Number.parseInt(
+  process.env.SMTP_PORT || process.env.EMAIL_PORT || '587',
+  10
+);
+export const smtpUser = process.env.SMTP_USER || process.env.EMAIL_ADDRESS;
+export const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASS;
+export const smtpSecure =
+  process.env.SMTP_SECURE === 'true' || process.env.EMAIL_SECURE === 'true';
 
 // Cloudinary config
 export const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME;

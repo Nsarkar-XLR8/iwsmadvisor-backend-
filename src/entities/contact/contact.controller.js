@@ -1,6 +1,7 @@
 // src/modules/contact/contact.controller.js
 import mongoose from 'mongoose';
 import sendEmail from '../../lib/sendEmail.js';
+import { contactEmail } from '../../core/config/config.js';
 import {
   createContactService,
   getContactsService,
@@ -8,8 +9,6 @@ import {
   updateContactService,
   deleteContactService
 } from './contact.service.js';
-
-const CONTACT_EMAIL = 'info@iwmsadvisors.com';
 
 // Public: create contact message (multipart/form-data)
 export const createContact = async (req, res) => {
@@ -40,16 +39,12 @@ export const createContact = async (req, res) => {
       });
     }
 
-    const mailResult = await sendEmail({
-      to: CONTACT_EMAIL,
+    await sendEmail({
+      to: contactEmail,
       subject,
       html,
       attachments
     });
-
-    if (!mailResult?.success) {
-      console.error('Careers email send failed:', mailResult?.error);
-    }
 
     return res.status(201).json({
       success: true,
