@@ -25,11 +25,13 @@ export const adminMail = process.env.ADMIN_EMAIL;
 export const emailTo = process.env.EMAIL_TO;
 export const contactEmail =
   process.env.CONTACT_EMAIL ||
-  process.env.EMAIL_TO ||
-  process.env.ADMIN_EMAIL ||
-  emailFrom;
+  'info@iwmsadvisors.com';
 export const careersEmail =
-  process.env.CAREERS_EMAIL || process.env.ADMIN_EMAIL || emailFrom;
+  process.env.CAREERS_EMAIL || 'careers@iwmsadvisors.com';
+export const subscriptionNotificationEmail =
+  process.env.SUBSCRIPTION_NOTIFICATION_EMAIL ||
+  process.env.CONTACT_EMAIL ||
+  'info@iwmsadvisors.com';
 
 // Microsoft Graph. Supports both the existing MS_* names and MS_GRAPH_* names.
 export const msGraphTenantId =

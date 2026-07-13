@@ -29,6 +29,93 @@ export const getUnsubscribeSection = (unsubscribeUrl) => {
   `;
 };
 
+const escapeHtml = (value) =>
+  String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+
+const formatValue = (value, fallback = 'N/A') => {
+  const text = String(value ?? '').trim();
+  return text ? escapeHtml(text) : fallback;
+};
+
+const formatMultilineValue = (value, fallback = 'N/A') =>
+  formatValue(value, fallback).replaceAll('\n', '<br/>');
+
+const formatLink = (url, label) => {
+  const text = String(url ?? '').trim();
+  if (!text) return 'N/A';
+  return `<a href="${escapeHtml(text)}" target="_blank" rel="noopener noreferrer" style="color: #305088; text-decoration: underline;">${escapeHtml(label || text)}</a>`;
+};
+
+const getInsightStyleEmailTemplate = ({
+  heading,
+  intro,
+  cardTitle,
+  cardDescription,
+  detailRows = [],
+  actionText,
+  actionUrl,
+  footerText = 'IWMS Advisors. All rights reserved.',
+  unsubscribeUrl
+}) => {
+  const rows = detailRows
+    .map(
+      ({ label, value }) => `
+        <p style="margin: 0 0 12px 0; color: #444; line-height: 1.6;">
+          <strong style="color: #305088;">${escapeHtml(label)}:</strong> ${value}
+        </p>
+      `
+    )
+    .join('');
+
+  return `
+    ${commonStyles}
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+      <div style="text-align: center; margin-bottom: 30px;">
+        <h2 style="color: #305088; margin-bottom: 10px;">${escapeHtml(heading)}</h2>
+        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
+        <p style="color: #7f8c8d; font-size: 16px; margin-top: 15px;">${escapeHtml(intro)}</p>
+      </div>
+
+      <div class="card" style="padding: 30px; background-color: #fcfcfc; border-radius: 12px; border: 1px solid #f0f0f0; border-left: 5px solid #305088; margin-bottom: 35px; transition: all 0.3s ease;">
+        <h3 style="color: #305088; margin: 0 0 15px 0; font-size: 22px; line-height: 1.4;">${escapeHtml(cardTitle)}</h3>
+        <p style="color: #444; line-height: 1.7; margin: 0; font-size: 16px;">${cardDescription}</p>
+      </div>
+
+      ${
+        rows
+          ? `<div style="color: #444; font-size: 16px; margin-bottom: 25px;">${rows}</div>`
+          : ''
+      }
+
+      ${
+        actionText && actionUrl
+          ? `
+            <div style="text-align: center; color: #444; font-size: 16px; margin-bottom: 20px;">
+              <p>${escapeHtml(actionText)}</p>
+            </div>
+            <div style="text-align: center; margin-bottom: 20px;">
+              <a href="${escapeHtml(actionUrl)}" class="primary-btn" style="display: inline-block; padding: 16px 35px; background-color: #305088; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(48, 80, 136, 0.2);">
+                Open Details
+              </a>
+            </div>
+          `
+          : ''
+      }
+
+      ${getUnsubscribeSection(unsubscribeUrl)}
+
+      <p style="margin-top: 40px; text-align: center; display:flex; flex-direction: column; justify-items:center; align-items:center; font-size: 12px; color: #bdc3c7; border-top: 1px solid #f0f0f0; padding-top: 25px;">
+        &copy; ${new Date().getFullYear()} ${escapeHtml(footerText)}
+      </p>
+    </div>
+  `;
+};
+
 const verificationCodeTemplate = (code, unsubscribeUrl) => `
   ${commonStyles}
   <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
@@ -268,34 +355,16 @@ export const getInsightNotificationTemplate = ({
 };
 
 export const getWelcomeEmailTemplate = ({ unsubscribeUrl }) => {
-  return `
-    ${commonStyles}
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 40px; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
-      <div style="text-align: center; margin-bottom: 35px;">
-        <h2 style="color: #305088; margin-bottom: 10px;">Welcome to IWMS Advisors</h2>
-        <div style="height: 3px; width: 50px; background-color: #305088; margin: 0 auto; border-radius: 2px;"></div>
-      </div>
-
-      <div style="font-size: 16px; line-height: 1.8; color: #444; margin-bottom: 35px;">
-        <p>Hello,</p>
-        <p>Thank you for subscribing to **IWMS Advisors**. We are thrilled to have you as part of our community.</p>
-        <p>You will now receive exclusive insights, market updates, and expert analysis directly in your inbox. Our goal is to provide you with valuable information that helps you make informed decisions and stay ahead in the industry.</p>
-        <p>In the meantime, feel free to explore our latest publications and resources on our website.</p>
-      </div>
-
-      <div style="text-align: center; margin-bottom: 20px;">
-        <a href="https://test.iwmsadvisors.com/" class="primary-btn" style="display: inline-block; padding: 16px 40px; background-color: #305088; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(48, 80, 136, 0.2);">
-          Explore Our Website
-        </a>
-      </div>
-
-      ${getUnsubscribeSection(unsubscribeUrl)}
-
-      <footer style="margin-top: 40px; text-align: center; font-size: 12px; color: #bdc3c7; border-top: 1px solid #f0f0f0; padding-top: 25px;">
-        &copy; ${new Date().getFullYear()} IWMS Advisors. All rights reserved.
-      </footer>
-    </div>
-  `;
+  return getInsightStyleEmailTemplate({
+    heading: 'Welcome to IWMS Advisors',
+    intro: 'Your subscription has been confirmed.',
+    cardTitle: 'Thank you for subscribing',
+    cardDescription:
+      'You will now receive exclusive insights, market updates, and expert analysis directly in your inbox. Our goal is to provide valuable information that helps you make informed decisions and stay ahead in the industry.',
+    actionText: 'Explore the latest insights on the IWMS Advisors website',
+    actionUrl: 'https://test.iwmsadvisors.com/',
+    unsubscribeUrl
+  });
 };
 
 export const getBlogNotificationTemplate = ({
@@ -341,3 +410,84 @@ export const getBlogNotificationTemplate = ({
     </div>
   `;
 };
+
+export const getContactNotificationTemplate = ({ contact }) =>
+  getInsightStyleEmailTemplate({
+    heading: 'New Contact Submission',
+    intro: 'A new message has been submitted from the Contact Us page.',
+    cardTitle: `${formatValue(contact.firstName, '')} ${formatValue(contact.lastName, '')}`.trim(),
+    cardDescription: formatMultilineValue(contact.message),
+    detailRows: [
+      { label: 'Email', value: formatValue(contact.email) },
+      { label: 'Phone', value: formatValue(contact.phone) },
+      { label: 'Service', value: formatValue(contact.service) },
+      {
+        label: 'Attachment',
+        value: contact?.file?.url
+          ? formatLink(
+              contact.file.url,
+              contact.file.originalName || contact.file.filename || 'View file'
+            )
+          : 'N/A'
+      }
+    ],
+    footerText: 'IWMS Advisors Admin Notification.'
+  });
+
+export const getGeneralApplicationNotificationTemplate = ({
+  application,
+  dashboardUrl
+}) =>
+  getInsightStyleEmailTemplate({
+    heading: 'New General Application Received',
+    intro: 'A new application has been submitted from the public application form.',
+    cardTitle: formatValue(application.fullName),
+    cardDescription: formatMultilineValue(application.coverLetter),
+    detailRows: [
+      { label: 'Email', value: formatValue(application.email) },
+      { label: 'Phone', value: formatValue(application.phone) },
+      { label: 'Resume', value: formatLink(application.resumeCV, 'View Resume CV') },
+      { label: 'Portfolio URL', value: formatLink(application.portfolioUrl) },
+      { label: 'LinkedIn', value: formatLink(application.linkedinProfile) }
+    ],
+    actionText: 'Review the application in the admin panel',
+    actionUrl: dashboardUrl,
+    footerText: 'IWMS Advisors Admin Notification.'
+  });
+
+export const getCareerApplicationNotificationTemplate = ({
+  application,
+  jobTitle,
+  jobPostUrl,
+  resumeUrl,
+  resumeLabel,
+  dashboardUrl
+}) =>
+  getInsightStyleEmailTemplate({
+    heading: 'New Career Application Received',
+    intro: 'A new application has been submitted for a career position.',
+    cardTitle: formatValue(application.name),
+    cardDescription: formatMultilineValue(application.coverLetter),
+    detailRows: [
+      { label: 'Email', value: formatValue(application.email) },
+      { label: 'Phone', value: formatValue(application.phone) },
+      { label: 'Job Position', value: formatValue(jobTitle) },
+      { label: 'Job Post URL', value: formatLink(jobPostUrl) },
+      { label: 'Resume', value: formatLink(resumeUrl, resumeLabel) },
+      { label: 'Portfolio', value: formatLink(application.portfolioLink) }
+    ],
+    actionText: 'Review the application in the admin panel',
+    actionUrl: dashboardUrl,
+    footerText: 'IWMS Advisors Admin Notification.'
+  });
+
+export const getSubscriptionNotificationTemplate = ({ email }) =>
+  getInsightStyleEmailTemplate({
+    heading: 'New Subscriber',
+    intro: 'A new visitor has subscribed to IWMS Advisors updates.',
+    cardTitle: 'Subscription Confirmed',
+    cardDescription:
+      'This subscriber has been added to the IWMS Advisors mailing list and received a confirmation email.',
+    detailRows: [{ label: 'Email', value: formatValue(email) }],
+    footerText: 'IWMS Advisors Admin Notification.'
+  });

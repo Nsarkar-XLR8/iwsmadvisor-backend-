@@ -1,13 +1,39 @@
 import { Subscribe, Brodcast } from "./broadcast.model.js";
 import { createFilter, createPaginationInfo } from "../../lib/pagination.js";
 import sendEmail from "../../lib/sendEmail.js";
+import { subscriptionNotificationEmail } from "../../core/config/config.js";
 import { 
   getInsightNotificationTemplate, 
   getWelcomeEmailTemplate, 
   getBlogNotificationTemplate,
   getUnsubscribeSection,
-  commonStyles
+  commonStyles,
+  getSubscriptionNotificationTemplate
 } from "../../lib/emailTemplates.js";
+
+const sendSubscriptionEmails = async (email) => {
+  const unsubscribeUrl = `https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe?email=${encodeURIComponent(email)}`;
+  const html = getWelcomeEmailTemplate({ unsubscribeUrl });
+
+  await sendEmail({
+    to: email,
+    subject: "Welcome to IWMS Advisors",
+    html: html,
+  });
+
+  // Save to broadcast history
+  await new Brodcast({
+    email,
+    subject: "Welcome to IWMS Advisors",
+    html: html,
+  }).save();
+
+  await sendEmail({
+    to: subscriptionNotificationEmail,
+    subject: `New Subscriber - ${email}`,
+    html: getSubscriptionNotificationTemplate({ email }),
+  });
+};
 
 /**
  * @desc    Create a new subscriber service
@@ -29,22 +55,9 @@ export const createSubscriberService = async ({ email }) => {
 
       // Send welcome email
       try {
-        const unsubscribeUrl = `https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe?email=${encodeURIComponent(email)}`;
-        const html = getWelcomeEmailTemplate({ unsubscribeUrl });
-        await sendEmail({
-          to: email,
-          subject: "Welcome to IWMS Advisors",
-          html: html,
-        });
-
-        // Save to broadcast history
-        await new Brodcast({
-          email,
-          subject: "Welcome to IWMS Advisors",
-          html: html,
-        }).save();
+        await sendSubscriptionEmails(email);
       } catch (error) {
-        console.error("Failed to send welcome email:", error.message);
+        console.error("Failed to send subscription email:", error.message);
       }
 
       return existingSubscriber;
@@ -56,22 +69,9 @@ export const createSubscriberService = async ({ email }) => {
 
   // Send welcome email
   try {
-    const unsubscribeUrl = `https://api.iwmsadvisors.com/api/v1/broadcast/unsubscribe?email=${encodeURIComponent(email)}`;
-    const html = getWelcomeEmailTemplate({ unsubscribeUrl });
-    await sendEmail({
-      to: email,
-      subject: "Welcome to IWMS Advisors",
-      html: html,
-    });
-
-    // Save to broadcast history
-    await new Brodcast({
-      email,
-      subject: "Welcome to IWMS Advisors",
-      html: html,
-    }).save();
+    await sendSubscriptionEmails(email);
   } catch (error) {
-    console.error("Failed to send welcome email:", error.message);
+    console.error("Failed to send subscription email:", error.message);
   }
 
   return savedSubscriber;

@@ -2,6 +2,7 @@
 import mongoose from 'mongoose';
 import sendEmail from '../../lib/sendEmail.js';
 import { contactEmail } from '../../core/config/config.js';
+import { getContactNotificationTemplate } from '../../lib/emailTemplates.js';
 import {
   createContactService,
   getContactsService,
@@ -20,16 +21,7 @@ export const createContact = async (req, res) => {
     });
 
     const subject = `New Contact Message from ${contact.firstName} ${contact.lastName}`;
-    const html = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.5;">
-        <h2>New Contact Submission</h2>
-        <p><strong>Name:</strong> ${contact.firstName} ${contact.lastName}</p>
-        <p><strong>Email:</strong> ${contact.email}</p>
-        <p><strong>Phone:</strong> ${contact.phone || 'N/A'}</p>
-        <p><strong>Service:</strong> ${contact.service}</p>
-        <p><strong>Message:</strong><br/>${contact.message}</p>
-      </div>
-    `;
+    const html = getContactNotificationTemplate({ contact });
 
     const attachments = [];
     if (contact?.file?.url) {

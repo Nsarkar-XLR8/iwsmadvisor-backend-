@@ -5,6 +5,7 @@ import {
   careersEmail,
   publicCareersBaseUrl
 } from '../../core/config/config.js';
+import { getCareerApplicationNotificationTemplate } from '../../lib/emailTemplates.js';
 import {
   createCareerApplicationService,
   getCareerApplicationsService,
@@ -66,27 +67,14 @@ export const applyToCareer = async (req, res) => {
       'https://admin.iwmsadvisors.com/career-management';
 
     // Send email notification to careers team
-    const emailContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; background-color: #f9f9f9;">
-        <h2 style="color: #333;">New Career Application Received</h2>
-        <p style="font-size: 14px; color: #555;">A new application has been submitted for a career position.</p>
-        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-        <h3 style="color: #333; margin-top: 20px;">Applicant Details</h3>
-        <p><strong>Name:</strong> ${application.name}</p>
-        <p><strong>Email:</strong> ${application.email}</p>
-        <p><strong>Phone:</strong> ${application.phone || 'N/A'}</p>
-        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-        <h3 style="color: #333; margin-top: 20px;">Application Details</h3>
-        <p><strong>Job Position:</strong> ${jobTitle}</p>
-        <p><strong>Job Post URL:</strong> <a href="${jobPostUrl}" target="_blank" rel="noopener noreferrer">${jobPostUrl}</a></p>
-        <p><strong>Resume:</strong> ${resumeUrl ? `<a href="${resumeUrl}" target="_blank" rel="noopener noreferrer">${resumeLabel}</a>` : 'N/A'}</p>
-        <p><strong>Portfolio:</strong> ${application.portfolioLink || 'N/A'}</p>
-        <p><strong>Cover Letter:</strong> ${application.coverLetter || 'N/A'}</p>
-        <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;">
-        <p><strong>Dashboard:</strong> <a href="${dashboardUrl}" target="_blank" rel="noopener noreferrer">Open career management dashboard</a></p>
-        <p style="font-size: 12px; color: #aaa; text-align: center;">This is an automated notification. Please review the application in the admin panel.</p>
-      </div>
-    `;
+    const emailContent = getCareerApplicationNotificationTemplate({
+      application,
+      jobTitle,
+      jobPostUrl,
+      resumeUrl,
+      resumeLabel,
+      dashboardUrl
+    });
 
     await sendEmail({
       to: careersEmail,
