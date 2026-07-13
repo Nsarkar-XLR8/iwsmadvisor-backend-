@@ -1,7 +1,10 @@
 import mongoose from 'mongoose';
 import sendEmail from '../../lib/sendEmail.js';
 import Career from '../career/career.model.js';
-import { publicCareersBaseUrl } from '../../core/config/config.js';
+import {
+  careersEmail,
+  publicCareersBaseUrl
+} from '../../core/config/config.js';
 import {
   createCareerApplicationService,
   getCareerApplicationsService,
@@ -86,7 +89,7 @@ export const applyToCareer = async (req, res) => {
     `;
 
     await sendEmail({
-      to: 'careers@iwmsadvisors.com',
+      to: careersEmail,
       subject: `New Career Application - ${application.name}`,
       html: emailContent
     });

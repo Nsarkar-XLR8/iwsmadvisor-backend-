@@ -3,12 +3,13 @@ import catchAsync from '../../lib/catchAsync.js';
 import { generateResponse } from '../../lib/responseFormate.js';
 import { cloudinaryUpload } from '../../lib/cloudinaryUpload.js';
 import sendEmail from '../../lib/sendEmail.js';
+import { careersEmail } from '../../core/config/config.js';
 
 const sendApplicationNotification = async (application) => {
   const dashboardUrl =
     process.env.APPLICATION_MANAGEMENT_DASHBOARD_URL ||
     'https://admin.iwmsadvisors.com/applications';
-  const recipientEmail = 'careers@iwmsadvisors.com';
+  const recipientEmail = careersEmail;
 
   const emailContent = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; background-color: #f9f9f9;">

@@ -22,6 +22,20 @@ export const emailExpires = Number.parseInt(
 export const emailFrom = process.env.EMAIL_FROM;
 export const adminMail = process.env.ADMIN_EMAIL;
 export const emailTo = process.env.EMAIL_TO;
+export const contactEmail =
+  process.env.CONTACT_EMAIL || process.env.EMAIL_TO || process.env.EMAIL_FROM;
+export const careersEmail =
+  process.env.CAREERS_EMAIL ||
+  process.env.ADMIN_EMAIL ||
+  process.env.EMAIL_FROM;
+
+// SMTP fallback. Microsoft Graph is used when its config is complete; SMTP is
+// available as a backup for deployments that use a traditional mail provider.
+export const smtpHost = process.env.SMTP_HOST;
+export const smtpPort = Number.parseInt(process.env.SMTP_PORT || '587', 10);
+export const smtpUser = process.env.SMTP_USER;
+export const smtpPass = process.env.SMTP_PASS;
+export const smtpSecure = process.env.SMTP_SECURE === 'true';
 
 // Microsoft Graph (OAuth2 client_credentials) — env var names match .env exactly
 export const msGraphTenantId = process.env.MS_TENANT_ID;
